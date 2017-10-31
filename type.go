@@ -1,6 +1,9 @@
 package mpp
 
-import "errors"
+import (
+	"encoding/binary"
+	"errors"
+)
 
 const (
 	NotExist = Type(iota)
@@ -56,6 +59,9 @@ const (
 
 var (
 	KeyPathNotFoundError = errors.New("Key path not found")
+	WrongFormatError     = errors.New("Wrong format")
+	NotStringError       = errors.New("Not a string")
+	IncompleteError      = errors.New("Not complete yet")
 )
 
 type Type uint8
@@ -69,6 +75,9 @@ func DebugGetType(it InType) (t Type) {
 }
 
 func getType(it InType) (t Type) {
+
+	t = Unknown
+
 	switch it {
 
 	case InTypeFixInt,
@@ -97,32 +106,78 @@ func getType(it InType) (t Type) {
 		InTypeStr32:
 
 		t = String
-
-	default:
-		t = Unknown
 	}
 
 	return
 }
 
-func GetInType(v byte) (InType, int) {
+func GetString(v []byte) (s string, err error) {
+	s, _, err = getString(v)
+	return
+}
 
-	in := uint(v)
+func getString(v []byte) (s string, end int64, err error) {
+	it, _, iPack := GetInType(v)
+
+	var offset int64
+	var strLen int64
+
+	switch it {
+
+	case InTypeFixStr:
+		offset = 0
+		strLen = int64(iPack)
+
+	case InTypeStr8:
+		offset = 1
+		strLen = int64(uint8(v[1]))
+
+	case InTypeStr16:
+		offset = 2
+		strLen = int64(binary.BigEndian.Uint16(v[1:3]))
+
+	case InTypeStr32:
+		offset = 4
+		strLen = int64(binary.BigEndian.Uint32(v[1:5]))
+
+	default:
+		err = NotStringError
+		return
+	}
+
+	start := offset + 1
+	end = start + strLen
+
+	s = string(v[start:end])
+
+	return
+}
+
+func GetInType(v []byte) (t InType, len int64, iPack uint32) {
+
+	in := uint(v[0])
 	if in <= uint(0x7f) {
-		return InTypeFixInt, int(v & 0x7f)
+		return InTypeFixInt, 1, uint32(v[0] & 0x7f)
 	}
 
 	if in <= uint(0x8f) {
-		return InTypeFixMap, int(v & 0x0f)
+		return InTypeFixMap, 1, uint32(v[0] & 0x0f)
 	}
 
 	if in <= uint(0x9f) {
-		return InTypeFixArray, int(v & 0x0f)
+		return InTypeFixArray, 1, uint32(v[0] & 0x0f)
 	}
 
 	if in <= uint(0xbf) {
-		return InTypeFixStr, int(v & 0x1f)
+		return InTypeFixStr, 1, uint32(v[0] & 0x1f)
 	}
 
-	return InTypeDevUnknown, 0
+	/*
+		switch in {
+			case :
+
+		}
+	*/
+
+	return InTypeDevUnknown, 0, 0
 }
