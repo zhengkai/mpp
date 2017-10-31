@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/binary"
 	"fmt"
 
@@ -24,7 +25,7 @@ func main() {
 	// mpp.Debug([]byte(`ka there is now cow level`))
 	r = []byte{1, 2, 3, 4, 5, 6, 7, 8, 9}
 
-	fmt.Println(r[1:3], r[3:5])
+	fmt.Println(`slice`, r[1:3], r[3:5])
 
 	r = loadDemo(`string`)
 	mpp.Debug(r)
@@ -32,7 +33,7 @@ func main() {
 	x, _, _ := mpp.Get(r, `foo`)
 	fmt.Println(`get`)
 
-	s, _ := mpp.GetString(x)
+	s, _ := mpp.GetStr(x)
 	fmt.Println(s)
 
 	r = loadDemo(`arrays`)
@@ -41,8 +42,24 @@ func main() {
 	x, _, _ = mpp.Get(r, `2`)
 	fmt.Println(`get`, len(x))
 
-	s, _ = mpp.GetString(x)
+	s, _ = mpp.GetStr(x)
 	fmt.Println(s)
+
+	fmt.Println(`------------`)
+
+	intArray := []byte{0, 0, 0, 0, 0, 1, 0, 1}
+
+	ba, bb := binary.Varint(intArray)
+
+	fmt.Println(`binary.Varint`, ba, bb)
+
+	buf := bytes.NewBuffer(intArray)
+
+	op, _ := binary.ReadVarint(buf)
+	fmt.Println(`op`, op)
+
+	zk := mpp.InType(31)
+	fmt.Println(int64(zk))
 
 	return
 

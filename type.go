@@ -1,14 +1,14 @@
 package mpp
 
 import (
-	"encoding/binary"
 	"errors"
 )
 
 const (
 	NotExist = Type(iota)
 	String
-	Number
+	Integer
+	Float
 	Object
 	Array
 	Boolean
@@ -61,6 +61,7 @@ var (
 	KeyPathNotFoundError = errors.New("Key path not found")
 	WrongFormatError     = errors.New("Wrong format")
 	NotStringError       = errors.New("Not a string")
+	NotIntegerError      = errors.New("Not a integer")
 	IncompleteError      = errors.New("Not complete yet")
 )
 
@@ -85,7 +86,7 @@ func getType(it InType) (t Type) {
 		InTypeUint16,
 		InTypeUint32:
 
-		t = Number
+		t = Integer
 
 	case InTypeFixArray,
 		InTypeArray16,
@@ -111,73 +112,79 @@ func getType(it InType) (t Type) {
 	return
 }
 
-func GetString(v []byte) (s string, err error) {
-	s, _, err = getString(v)
-	return
-}
+func getLen(v InType) (len int64) {
+	switch v {
 
-func getString(v []byte) (s string, end int64, err error) {
-	it, _, iPack := GetInType(v)
+	case
+		InTypeFixInt,
+		InTypeNil,
+		InTypeNa,
+		InTypeFalse,
+		InTypeTrue:
 
-	var offset int64
-	var strLen int64
+		len = 1
 
-	switch it {
+	case
+		InTypeBin8,
+		InTypeExt8,
+		InTypeUint8,
+		InTypeInt8,
+		InTypeFixExt8:
 
-	case InTypeFixStr:
-		offset = 0
-		strLen = int64(iPack)
+		len = 2
 
-	case InTypeStr8:
-		offset = 1
-		strLen = int64(uint8(v[1]))
+	case
+		InTypeBin16,
+		InTypeExt16,
+		InTypeUint16,
+		InTypeInt16,
+		InTypeFixExt16:
 
-	case InTypeStr16:
-		offset = 2
-		strLen = int64(binary.BigEndian.Uint16(v[1:3]))
+		len = 3
 
-	case InTypeStr32:
-		offset = 4
-		strLen = int64(binary.BigEndian.Uint32(v[1:5]))
+	case
+		InTypeBin32,
+		InTypeExt32,
+		InTypeFloat32,
+		InTypeUint32,
+		InTypeInt32:
 
-	default:
-		err = NotStringError
-		return
+		len = 5
+
+	case
+		InTypeFloat64,
+		InTypeUint64,
+		InTypeInt64:
+
+		len = 9
 	}
-
-	start := offset + 1
-	end = start + strLen
-
-	s = string(v[start:end])
 
 	return
 }
 
 func GetInType(v []byte) (t InType, len int64, iPack uint32) {
 
-	in := uint(v[0])
-	if in <= uint(0x7f) {
-		return InTypeFixInt, 1, uint32(v[0] & 0x7f)
+	in := InType(v[0])
+	if in <= 0x7f {
+		return InTypeFixInt, 1, uint32(in & 0x7f)
 	}
 
-	if in <= uint(0x8f) {
-		return InTypeFixMap, 1, uint32(v[0] & 0x0f)
+	if in <= 0x8f {
+		return InTypeFixMap, 1, uint32(in & 0x0f)
 	}
 
-	if in <= uint(0x9f) {
-		return InTypeFixArray, 1, uint32(v[0] & 0x0f)
+	if in <= 0x9f {
+		return InTypeFixArray, 1, uint32(in & 0x0f)
 	}
 
-	if in <= uint(0xbf) {
-		return InTypeFixStr, 1, uint32(v[0] & 0x1f)
+	if in <= 0xbf {
+		return InTypeFixStr, 1, uint32(in & 0x1f)
 	}
 
-	/*
-		switch in {
-			case :
-
-		}
-	*/
+	l := getLen(in)
+	if l > 0 {
+		return in, l, 0
+	}
 
 	return InTypeDevUnknown, 0, 0
 }

@@ -30,15 +30,16 @@ func skip(v []byte, j int) ([]byte, error) {
 		switch t {
 
 		case String:
-			_, end, err := getString(v)
+
+			_, end, err := getStr(v)
 			if err != nil {
 				return nil, WrongFormatError
 			}
 			v = v[end:]
 
-		case Number:
+		case Integer:
 
-			return nil, IncompleteError
+			v = v[getLen(it):]
 
 		default:
 			return nil, IncompleteError
