@@ -1,7 +1,6 @@
 package mpp
 
 import (
-	"fmt"
 	"strconv"
 )
 
@@ -9,15 +8,12 @@ func Get(v []byte, key ...string) (r []byte, t Type, err error) {
 
 	tier := len(key)
 
-	it, al, iPack := GetInType(v)
+	it, al, _ := GetInType(v)
 	t = getType(it)
 	if tier < 1 {
 		r = v
 		return
 	}
-
-	v = v[al:]
-	fmt.Println(`len =`, al)
 
 	var findKey string
 
@@ -25,7 +21,8 @@ func Get(v []byte, key ...string) (r []byte, t Type, err error) {
 	case Object:
 
 		var i int64
-		j := int64(iPack)
+		j, _, _ := getObjLen(v)
+		v = v[al:]
 
 		findKey, key = key[0], key[1:]
 
@@ -65,20 +62,34 @@ func Get(v []byte, key ...string) (r []byte, t Type, err error) {
 
 		findKey, key = key[0], key[1:]
 
-		var i int
-		i, err = strconv.Atoi(findKey)
+		var i int64
+		var tI int
+		tI, err = strconv.Atoi(findKey)
 		if err != nil {
 			err = KeyPathNotFoundError
 			return
 		}
+		i = int64(tI)
 
 		if i > 0 {
+
+			j, _, _ := getArrayLen(v)
+			v = v[al:]
+			if i > j {
+				err = KeyPathNotFoundError
+				return
+			}
+
 			var subErr error
 			v, subErr = skip(v, i)
+
 			if subErr != nil {
 				err = WrongFormatError
 				return
 			}
+		} else {
+
+			v = v[al:]
 		}
 
 		return Get(v, key...)

@@ -1,7 +1,5 @@
 package mpp
 
-import "fmt"
-
 func isPack(it InType) bool {
 	switch it {
 	case InTypeFixArray,
@@ -16,52 +14,27 @@ func isPack(it InType) bool {
 	return false
 }
 
-func skip(v []byte, j int) ([]byte, error) {
+func skip(v []byte, j int64) ([]byte, error) {
 
 	if j < 1 {
 		return v, nil
 	}
 
-	var i = 0
+	var i int64
 
 	for {
+		i++
+		if i > j {
+			break
+		}
 
-		it, metaLen, iPack := GetInType(v)
-		t := getType(it)
+		dataLen := getByteLen(v)
 
-		switch t {
-
-		case String:
-
-			_, end, err := getStr(v)
-			if err != nil {
-				return nil, WrongFormatError
-			}
-			v = v[end:]
-
-		case Integer,
-			Float,
-			Boolean,
-			Null:
-
-			v = v[getMetaLen(it):]
-
-		case Object:
-
-			fmt.Println(`obj`, metaLen, iPack)
-
-		case Array:
-
-			fmt.Println(`array`, metaLen, iPack)
-
-		default:
+		if dataLen < 1 {
 			return nil, IncompleteError
 		}
 
-		i++
-		if i >= j {
-			break
-		}
+		v = v[dataLen:]
 	}
 
 	return v, nil

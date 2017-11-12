@@ -15,6 +15,7 @@ func Debug(s []byte) {
 
 		fmt.Printf("%s %02x %08b %d\n", s, b, b, i)
 	}
+	fmt.Println()
 }
 
 func getFormat() {

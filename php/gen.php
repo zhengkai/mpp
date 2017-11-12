@@ -25,15 +25,14 @@ foreach ($list as $i) {
 	}
 }
 
-exit;
-
 save('string', ['abc' => 'def', 'a1' => 'a2', 'foo' => 'bar']);
 save('int1', 1);
 save('int-1', -1);
 save('int128', 128);
 save('int109', 109);
-save('array1', [1,2,'a']);
-save('arrays', ['a','b','c']);
+save('array-a', [1,2,'a']);
+save('array-b', ['a','b',['x','y'],'c']);
+save('array-c', ['a','b',['foo' => 'x', 'bar' => 'y'],'c']);
 save('multi', [
 	[
 		1,

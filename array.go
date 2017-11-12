@@ -2,25 +2,26 @@ package mpp
 
 import (
 	"encoding/binary"
-	"fmt"
 )
 
-func getArrayLen(v []byte) (r []byte, end int64, err error) {
+func getArrayLen(v []byte) (arrayLen int64, metaLen int64, err error) {
 
 	it, metaLen, iPack := GetInType(v)
 
-	var offset int64
-	var arrayLen int64
+	switch it {
 
-	if metaLen > 0 {
-		arrayLen = int64(binary.BigEndian.Uint16(v[1:metaLen]))
-	} else {
+	case InTypeFixArray:
 		arrayLen = int64(iPack)
+
+	case InTypeArray16:
+		arrayLen = int64(binary.BigEndian.Uint16(v[1:metaLen]))
+
+	case InTypeArray32:
+		arrayLen = int64(binary.BigEndian.Uint32(v[1:metaLen]))
+
+	default:
+		err = NotArrayError
 	}
-
-	start := offset + 1
-
-	fmt.Println(arrayLen, it, start)
 
 	return
 }

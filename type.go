@@ -84,6 +84,9 @@ func getType(it InType) (t Type) {
 	switch it {
 
 	case InTypeFixInt,
+		InTypeInt8,
+		InTypeInt16,
+		InTypeInt32,
 		InTypeUint8,
 		InTypeUint16,
 		InTypeUint32:
@@ -102,6 +105,11 @@ func getType(it InType) (t Type) {
 
 		t = Object
 
+	case InTypeTrue,
+		InTypeFalse:
+
+		t = Boolean
+
 	case
 		InTypeFixStr,
 		InTypeStr8,
@@ -112,6 +120,61 @@ func getType(it InType) (t Type) {
 	}
 
 	return
+}
+
+func getByteLen(v []byte) (byteLen int64) {
+
+	it, metaLen, _ := GetInType(v)
+	t := getType(it)
+
+	switch t {
+
+	case Integer,
+		Boolean:
+
+		byteLen = metaLen
+
+	case String:
+
+		strLen, _, _ := getStrLen(v)
+
+		byteLen = metaLen + strLen
+
+	case Object:
+
+		objLen, _, _ := getObjLen(v)
+		limit := objLen * 2
+		var i int64
+		byteLen = metaLen
+		for {
+			i++
+			if i > limit {
+				break
+			}
+			byteLen += getByteLen(v[byteLen:])
+		}
+
+	case Array:
+
+		arrayLen, _, _ := getArrayLen(v)
+
+		var i int64
+		byteLen = metaLen
+		for {
+			i++
+			if i > arrayLen {
+				break
+			}
+			byteLen += getByteLen(v[byteLen:])
+		}
+
+	default:
+
+		panic(`unknown type`)
+	}
+
+	return
+
 }
 
 func getMetaLen(v InType) (len int64) {
@@ -203,4 +266,9 @@ func GetInType(v []byte) (t InType, metaLen int64, iPack uint32) {
 	}
 
 	return InTypeDevUnknown, 0, 0
+}
+
+func getMeta(v []byte) (it InType, t Type, metaLen int64, iPack uint32) {
+	// TODO: combine GetInType / getMetaLen / getType and special get len func
+	return
 }
