@@ -8,6 +8,12 @@ function debug($s) {
 
 function save($file, $v) {
 	$file = __DIR__ . '/demo/' . $file . '.bin';
+
+	$dir = dirname($file);
+	if (!file_exists($dir)) {
+		mkdir($dir, 0777, TRUE);
+	}
+
 	file_put_contents($file, msgpack_pack($v));
 	echo $file, "\n";
 }

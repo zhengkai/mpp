@@ -133,7 +133,8 @@ func getMetaLen(v InType) (len int64) {
 		InTypeExt8,
 		InTypeUint8,
 		InTypeInt8,
-		InTypeFixExt8:
+		InTypeFixExt8,
+		InTypeStr8:
 
 		len = 2
 
@@ -144,6 +145,7 @@ func getMetaLen(v InType) (len int64) {
 		InTypeExt16,
 		InTypeUint16,
 		InTypeInt16,
+		InTypeStr16,
 		InTypeFixExt16:
 
 		len = 3
@@ -155,6 +157,7 @@ func getMetaLen(v InType) (len int64) {
 		InTypeExt32,
 		InTypeFloat32,
 		InTypeUint32,
+		InTypeStr32,
 		InTypeInt32:
 
 		len = 5
@@ -195,6 +198,7 @@ func GetInType(v []byte) (t InType, metaLen int64, iPack uint32) {
 
 	metaLen = getMetaLen(in)
 	if metaLen > 0 {
+		t = in
 		return
 	}
 

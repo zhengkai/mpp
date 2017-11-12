@@ -1,6 +1,8 @@
 package mpp
 
-import "encoding/binary"
+import (
+	"encoding/binary"
+)
 
 func GetStr(v []byte) (s string, err error) {
 	s, _, err = getStr(v)

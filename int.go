@@ -44,10 +44,13 @@ func getInt(v []byte) (i int64, metaLen int64, err error) {
 	case InTypeUint8:
 		i = int64(uint8(v[1]))
 
-	case InTypeUint16,
-		InTypeUint32,
-		InTypeUint64:
+	case InTypeUint16:
+		i = int64(binary.BigEndian.Uint16(v[1:metaLen]))
 
+	case InTypeUint32:
+		i = int64(binary.BigEndian.Uint32(v[1:metaLen]))
+
+	case InTypeUint64:
 		i = int64(binary.BigEndian.Uint64(v[1:metaLen]))
 
 	default:

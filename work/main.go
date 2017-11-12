@@ -1,96 +1,104 @@
 package main
 
 import (
-	"bytes"
-	"encoding/binary"
 	"fmt"
 
 	"github.com/zhengkai/mpp"
 	// "github.com/zhengkai/mpp"
 )
 
-func x(a []byte) {
-	a = a[uint8(12):]
-
-	fmt.Println(a)
-}
-
 func main() {
 
-	r := []byte{}
+	testStr()
+	testInt()
+}
 
-	f := binary.BigEndian.Uint16([]byte{0, 0, 0, 0, 0, 0, 0, 1})
-	fmt.Println(f)
+func testStr() {
+	var list = [...]int{
+		1,
+		31,
+		32,
+		33,
+		65535,
+		65536,
+		65537,
+	}
 
-	// mpp.Debug([]byte(`ka there is now cow level`))
-	r = []byte{1, 2, 3, 4, 5, 6, 7, 8, 9}
+	for _, i := range list {
 
-	fmt.Println(`slice`, r[1:3], r[3:5])
+		file := fmt.Sprintf(`str/len-%d`, i)
 
-	r = loadDemo(`string`)
-	mpp.Debug(r)
+		v := loadDemo(file)
 
-	x, _, _ := mpp.Get(r, `foo`)
-	fmt.Println(`get`)
+		if len(v) < 1 {
+			fmt.Println(`load file`, file, `fail`)
+			return
+		}
 
-	s, _ := mpp.GetStr(x)
-	fmt.Println(s)
+		s, err := mpp.GetStr(v)
 
-	r = loadDemo(`arrays`)
-	mpp.Debug(r)
+		if err != nil {
+			fmt.Println(`error when load str`, i, err)
+			return
+		}
 
-	x, _, _ = mpp.Get(r, `2`)
-	fmt.Println(`get`, len(x))
+		if len(s) != i {
+			fmt.Println(`str len not match`, i)
+			return
+		}
 
-	s, _ = mpp.GetStr(x)
-	fmt.Println(s)
+		fmt.Println(`str`, i, `pass`)
+	}
+}
 
-	fmt.Println(`------------`)
+func testInt() {
 
-	intArray := []byte{0, 0, 0, 0, 0, 1, 0, 1}
+	var list = [...]int64{
+		1,
+		2,
+		3,
+		4,
+		5,
+		15,
+		16,
+		17,
+		127,
+		128,
+		129,
+		255,
+		256,
+		257,
+		65535,
+		65536,
+		65537,
+		4294967295,
+		4294967296,
+		4294967297,
+		9223372036854775806,
+		9223372036854775807,
+	}
 
-	ba, bb := binary.Varint(intArray)
+	for _, i := range list {
+		file := fmt.Sprintf(`int/n%d`, i)
 
-	fmt.Println(`binary.Varint`, ba, bb)
+		v := loadDemo(file)
 
-	buf := bytes.NewBuffer(intArray)
+		if len(v) < 1 {
+			fmt.Println(`load file`, file, `fail`)
+			return
+		}
 
-	op, _ := binary.ReadVarint(buf)
-	fmt.Println(`op`, op)
+		j, err := mpp.GetInt(v)
+		if err != nil {
+			fmt.Println(`error when load int`, i, err)
+			return
+		}
 
-	zk := mpp.InType(31)
-	fmt.Println(int64(zk))
+		if j != i {
+			fmt.Println(`int not match`, i)
+			return
+		}
 
-	return
-
-	/*
-		r = loadDemo(`string`)
-		mpp.Debug(r)
-
-		r = loadDemo(`int128`)
-		mpp.Debug(r)
-
-		r = loadDemo(`int-1`)
-		mpp.Debug(r)
-
-		r = loadDemo(`int1`)
-		mpp.Debug(r)
-
-		r = loadDemo(`array1`)
-		mpp.Debug(r)
-
-		r = loadDemo(`int109`)
-		mpp.Debug(r)
-
-		fmt.Println("\n---- msgp to json ----\n")
-
-		rt, t, _ := mpp.Get(r)
-		fmt.Println(t, rt)
-
-		fmt.Println(`type =`, mpp.DebugGetType(mpp.InTypeArray16))
-
-		rt, t, err := mpp.Get(r, `no`)
-		fmt.Println(err)
-	*/
-
+		fmt.Println(`int`, i, `pass`)
+	}
 }
