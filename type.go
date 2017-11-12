@@ -62,6 +62,8 @@ var (
 	WrongFormatError     = errors.New("Wrong format")
 	NotStringError       = errors.New("Not a string")
 	NotIntegerError      = errors.New("Not a integer")
+	NotArrayError        = errors.New("Not a array")
+	NotObjectError       = errors.New("Not a object")
 	IncompleteError      = errors.New("Not complete yet")
 )
 
@@ -112,10 +114,12 @@ func getType(it InType) (t Type) {
 	return
 }
 
-func getLen(v InType) (len int64) {
+func getMetaLen(v InType) (len int64) {
 	switch v {
 
 	case
+		InTypeFixArray,
+		InTypeFixMap,
 		InTypeFixInt,
 		InTypeNil,
 		InTypeNa,
@@ -134,6 +138,8 @@ func getLen(v InType) (len int64) {
 		len = 2
 
 	case
+		InTypeArray16,
+		InTypeMap16,
 		InTypeBin16,
 		InTypeExt16,
 		InTypeUint16,
@@ -143,6 +149,8 @@ func getLen(v InType) (len int64) {
 		len = 3
 
 	case
+		InTypeArray32,
+		InTypeMap32,
 		InTypeBin32,
 		InTypeExt32,
 		InTypeFloat32,
@@ -157,12 +165,16 @@ func getLen(v InType) (len int64) {
 		InTypeInt64:
 
 		len = 9
+
+	default:
+
+		panic(`incomplete type`)
 	}
 
 	return
 }
 
-func GetInType(v []byte) (t InType, len int64, iPack uint32) {
+func GetInType(v []byte) (t InType, metaLen int64, iPack uint32) {
 
 	in := InType(v[0])
 	if in <= 0x7f {
@@ -181,9 +193,9 @@ func GetInType(v []byte) (t InType, len int64, iPack uint32) {
 		return InTypeFixStr, 1, uint32(in & 0x1f)
 	}
 
-	l := getLen(in)
-	if l > 0 {
-		return in, l, 0
+	metaLen = getMetaLen(in)
+	if metaLen > 0 {
+		return
 	}
 
 	return InTypeDevUnknown, 0, 0

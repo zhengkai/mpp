@@ -1,5 +1,7 @@
 package mpp
 
+import "fmt"
+
 func isPack(it InType) bool {
 	switch it {
 	case InTypeFixArray,
@@ -24,7 +26,7 @@ func skip(v []byte, j int) ([]byte, error) {
 
 	for {
 
-		it, _, _ := GetInType(v)
+		it, metaLen, iPack := GetInType(v)
 		t := getType(it)
 
 		switch t {
@@ -37,9 +39,20 @@ func skip(v []byte, j int) ([]byte, error) {
 			}
 			v = v[end:]
 
-		case Integer:
+		case Integer,
+			Float,
+			Boolean,
+			Null:
 
-			v = v[getLen(it):]
+			v = v[getMetaLen(it):]
+
+		case Object:
+
+			fmt.Println(`obj`, metaLen, iPack)
+
+		case Array:
+
+			fmt.Println(`array`, metaLen, iPack)
 
 		default:
 			return nil, IncompleteError
