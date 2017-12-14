@@ -8,8 +8,13 @@ func Get(v []byte, key ...string) (r []byte, t Type, err error) {
 
 	tier := len(key)
 
-	it, al, _ := GetInType(v)
-	t = getType(it)
+	_, t, metaLen, ext, parseErr := parseMeta(v)
+
+	if parseErr != nil {
+		err = parseErr
+		return
+	}
+
 	if tier < 1 {
 		r = v
 		return
@@ -18,16 +23,16 @@ func Get(v []byte, key ...string) (r []byte, t Type, err error) {
 	var findKey string
 
 	switch t {
+
 	case Object:
 
 		var i int64
-		j, _, _ := getObjLen(v)
-		v = v[al:]
+		v = v[metaLen:]
 
 		findKey, key = key[0], key[1:]
 
 		for {
-			if i > j {
+			if i > ext {
 				err = KeyPathNotFoundError
 				break
 			}
@@ -73,9 +78,8 @@ func Get(v []byte, key ...string) (r []byte, t Type, err error) {
 
 		if i > 0 {
 
-			j, _, _ := getArrayLen(v)
-			v = v[al:]
-			if i > j {
+			v = v[metaLen:]
+			if i > ext {
 				err = KeyPathNotFoundError
 				return
 			}
@@ -87,9 +91,10 @@ func Get(v []byte, key ...string) (r []byte, t Type, err error) {
 				err = WrongFormatError
 				return
 			}
+
 		} else {
 
-			v = v[al:]
+			v = v[metaLen:]
 		}
 
 		return Get(v, key...)

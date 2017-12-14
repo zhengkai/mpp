@@ -1,27 +1,34 @@
 package mpp
 
-import (
-	"encoding/binary"
-)
+/*
+func ArrayEach(in []byte, cb func(i int64, v []byte, t Type, err error) (isGoon bool)) (err error) {
 
-func getArrayLen(v []byte) (arrayLen int64, metaLen int64, err error) {
+	_, t, metaLen, ext, parseErr := parseMeta(in)
+	if t != Array || parseErr != nil {
+		return NotArrayError
+	}
 
-	it, metaLen, iPack := GetInType(v)
+	in = in[metaLen:]
 
-	switch it {
+	var i int64
 
-	case InTypeFixArray:
-		arrayLen = int64(iPack)
+	for {
 
-	case InTypeArray16:
-		arrayLen = int64(binary.BigEndian.Uint16(v[1:metaLen]))
+		it, t, metaLen, ext, parseErr := parseMeta(in)
 
-	case InTypeArray32:
-		arrayLen = int64(binary.BigEndian.Uint32(v[1:metaLen]))
+		isGoon := cb(i, in, t, parseErr)
+		if !isGoon {
+			break
+		}
 
-	default:
-		err = NotArrayError
+		i++
+		if i > ext {
+			break
+		}
+
+		in = in[metaLen+ext:]
 	}
 
 	return
 }
+*/

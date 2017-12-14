@@ -1,6 +1,7 @@
 package mpp
 
 import (
+	"encoding/binary"
 	"errors"
 )
 
@@ -64,6 +65,7 @@ var (
 	NotIntegerError      = errors.New("Not a integer")
 	NotArrayError        = errors.New("Not a array")
 	NotObjectError       = errors.New("Not a object")
+	NotFixedDataError    = errors.New("Not a fixed data")
 	IncompleteError      = errors.New("Not complete yet")
 )
 
@@ -87,9 +89,11 @@ func getType(it InType) (t Type) {
 		InTypeInt8,
 		InTypeInt16,
 		InTypeInt32,
+		InTypeInt64,
 		InTypeUint8,
 		InTypeUint16,
-		InTypeUint32:
+		InTypeUint32,
+		InTypeUint64:
 
 		t = Integer
 
@@ -124,8 +128,7 @@ func getType(it InType) (t Type) {
 
 func getByteLen(v []byte) (byteLen int64) {
 
-	it, metaLen, _ := GetInType(v)
-	t := getType(it)
+	_, t, metaLen, ext, _ := parseMeta(v)
 
 	switch t {
 
@@ -136,14 +139,11 @@ func getByteLen(v []byte) (byteLen int64) {
 
 	case String:
 
-		strLen, _, _ := getStrLen(v)
-
-		byteLen = metaLen + strLen
+		byteLen = metaLen + ext
 
 	case Object:
 
-		objLen, _, _ := getObjLen(v)
-		limit := objLen * 2
+		limit := ext * 2
 		var i int64
 		byteLen = metaLen
 		for {
@@ -156,13 +156,11 @@ func getByteLen(v []byte) (byteLen int64) {
 
 	case Array:
 
-		arrayLen, _, _ := getArrayLen(v)
-
 		var i int64
 		byteLen = metaLen
 		for {
 			i++
-			if i > arrayLen {
+			if i > ext {
 				break
 			}
 			byteLen += getByteLen(v[byteLen:])
@@ -240,26 +238,10 @@ func getMetaLen(v InType) (len int64) {
 	return
 }
 
+/*
 func GetInType(v []byte) (t InType, metaLen int64, iPack uint32) {
 
-	in := InType(v[0])
-	if in <= 0x7f {
-		return InTypeFixInt, 1, uint32(in & 0x7f)
-	}
-
-	if in <= 0x8f {
-		return InTypeFixMap, 1, uint32(in & 0x0f)
-	}
-
-	if in <= 0x9f {
-		return InTypeFixArray, 1, uint32(in & 0x0f)
-	}
-
-	if in <= 0xbf {
-		return InTypeFixStr, 1, uint32(in & 0x1f)
-	}
-
-	metaLen = getMetaLen(in)
+	metaLen = getMetaLen(v)
 	if metaLen > 0 {
 		t = in
 		return
@@ -267,8 +249,69 @@ func GetInType(v []byte) (t InType, metaLen int64, iPack uint32) {
 
 	return InTypeDevUnknown, 0, 0
 }
+*/
 
-func getMeta(v []byte) (it InType, t Type, metaLen int64, iPack uint32) {
+func getFixedMeta(b InType) (it InType, t Type, metaLen int64, ext int64) {
+
+	if b <= 0x7f {
+		return InTypeFixInt, Integer, 1, int64(b & 0x7f)
+	}
+
+	if b <= 0x8f {
+		return InTypeFixMap, Object, 1, int64(b & 0x0f)
+	}
+
+	if b <= 0x9f {
+		return InTypeFixArray, Array, 1, int64(b & 0x0f)
+	}
+
+	if b <= 0xbf {
+		return InTypeFixStr, String, 1, int64(b & 0x1f)
+	}
+
+	return
+}
+
+func parseMeta(v []byte) (it InType, t Type, metaLen int64, ext int64, err error) {
+
 	// TODO: combine GetInType / getMetaLen / getType and special get len func
+
+	first := InType(v[0])
+
+	if first <= 0xbf {
+		it, t, metaLen, ext = getFixedMeta(first)
+		return
+	}
+
+	it = first
+	t = getType(it)
+	metaLen = getMetaLen(it)
+
+	switch it {
+
+	case InTypeStr8:
+		ext = int64(uint8(v[1]))
+
+	case InTypeStr16:
+		ext = int64(binary.BigEndian.Uint16(v[1:metaLen]))
+
+	case InTypeStr32:
+		ext = int64(binary.BigEndian.Uint32(v[1:metaLen]))
+
+	case InTypeArray16:
+		ext = int64(binary.BigEndian.Uint16(v[1:metaLen]))
+
+	case InTypeArray32:
+		ext = int64(binary.BigEndian.Uint32(v[1:metaLen]))
+
+	case InTypeMap16:
+		ext = int64(binary.BigEndian.Uint16(v[1:metaLen]))
+
+	case InTypeMap32:
+		ext = int64(binary.BigEndian.Uint32(v[1:metaLen]))
+
+	default:
+	}
+
 	return
 }

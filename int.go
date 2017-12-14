@@ -3,6 +3,7 @@ package mpp
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
 )
 
 func GetInt(v []byte) (i int64, err error) {
@@ -12,12 +13,17 @@ func GetInt(v []byte) (i int64, err error) {
 
 func getInt(v []byte) (i int64, metaLen int64, err error) {
 
-	it, metaLen, iPack := GetInType(v)
+	it, t, metaLen, ext, parseErr := parseMeta(v)
+	if t != Integer || parseErr != nil {
+		fmt.Println(`test`, it)
+		err = NotIntegerError
+		return
+	}
 
 	switch it {
 
 	case InTypeFixInt:
-		i = int64(iPack)
+		i = int64(ext)
 
 	case InTypeInt8:
 		i = int64(int8(v[1]))
@@ -55,6 +61,7 @@ func getInt(v []byte) (i int64, metaLen int64, err error) {
 
 	default:
 		err = NotIntegerError
+		fmt.Println(`test`, it)
 		return
 	}
 

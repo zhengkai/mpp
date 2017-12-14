@@ -31,7 +31,7 @@ func MSGPtoJSON(s []byte) []byte {
 	i := 0
 	for i < l {
 		v := s[i]
-		t, _, j := GetInType([]byte{v})
+		t, _, _, j, _ := parseMeta([]byte{v})
 		fmt.Printf("v hex = %02x, v = %08b, t = %08b, i = %02x\n", v, v, t, j)
 
 		i++
