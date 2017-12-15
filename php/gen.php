@@ -47,3 +47,10 @@ save('multi', [
 		6,
 	],
 ]);
+
+foreach (range(1, 10) as $i) {
+	$a = makeRandomArray();
+	save('json/' . $i . '.json', json_encode($a, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), false);
+	save('json/' . $i . '.jsonf', json_encode($a, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), false);
+	save('json/' . $i, $a);
+}

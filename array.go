@@ -1,12 +1,15 @@
 package mpp
 
-/*
-func ArrayEach(in []byte, cb func(i int64, v []byte, t Type, err error) (isGoon bool)) (err error) {
+import "fmt"
+
+func ArrayEach(in []byte, cb func(i int64, v []byte, t Type, err error) (isContinue bool)) (err error) {
 
 	_, t, metaLen, ext, parseErr := parseMeta(in)
 	if t != Array || parseErr != nil {
 		return NotArrayError
 	}
+
+	fmt.Println(`total len`, len(in), ext)
 
 	in = in[metaLen:]
 
@@ -14,21 +17,25 @@ func ArrayEach(in []byte, cb func(i int64, v []byte, t Type, err error) (isGoon 
 
 	for {
 
-		it, t, metaLen, ext, parseErr := parseMeta(in)
+		_, t, _, _, parseErr := parseMeta(in)
 
-		isGoon := cb(i, in, t, parseErr)
-		if !isGoon {
+		isContinue := cb(i, in, t, parseErr)
+		if !isContinue || parseErr != nil {
 			break
 		}
 
 		i++
-		if i > ext {
+		if i >= ext {
 			break
 		}
 
-		in = in[metaLen+ext:]
+		l := getByteLen(in)
+		fmt.Println(`sub len`, l)
+
+		fmt.Println(`len`, TypeName[t], l)
+
+		in = in[l:]
 	}
 
 	return
 }
-*/

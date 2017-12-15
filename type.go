@@ -67,13 +67,21 @@ var (
 	NotObjectError       = errors.New("Not a object")
 	NotFixedDataError    = errors.New("Not a fixed data")
 	IncompleteError      = errors.New("Not complete yet")
+
+	TypeName = map[Type]string{
+		String:  `String`,
+		Integer: `Integer`,
+		Float:   `Float`,
+		Object:  `Object`,
+		Array:   `Array`,
+		Boolean: `Boolean`,
+		Null:    `Null`,
+		Unknown: `Unknown`,
+	}
 )
 
 type Type uint8
 type InType uint8
-
-func GetType(v []byte) {
-}
 
 func DebugGetType(it InType) (t Type) {
 	return getType(it)
@@ -124,6 +132,10 @@ func getType(it InType) (t Type) {
 	}
 
 	return
+}
+
+func GetByteLen(v []byte) (byteLen int64) {
+	return getByteLen(v)
 }
 
 func getByteLen(v []byte) (byteLen int64) {
