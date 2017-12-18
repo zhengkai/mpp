@@ -11,3 +11,8 @@ func loadDemo(name string) (r []byte) {
 	r, _ = ioutil.ReadFile(`../php/demo/` + name + `.bin`)
 	return r
 }
+
+func loadDemoData(name string) (r []byte) {
+	r, _ = ioutil.ReadFile(`../php/demo/` + name)
+	return r
+}

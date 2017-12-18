@@ -2,56 +2,64 @@ package mpp
 
 import (
 	"bytes"
-	"fmt"
 	"strconv"
 )
 
-func ToJSON(v []byte) *bytes.Buffer {
+func ToJson(v []byte) *bytes.Buffer {
 
 	buf := bytes.NewBuffer([]byte{})
 
-	ArrayEach(v, func(i int64, v []byte, t Type, err error) bool {
+	_, t, err := Get(v)
 
-		fmt.Println(`#`, i, t)
+	if err != nil {
+		buf.WriteString(`!ERROR!`)
+		buf.WriteString(err.Error())
+		return buf
+	}
+
+	switch t {
+
+	case Array:
+
+		toJsonArray(v, buf)
+
+	case Object:
+		buf.WriteByte('{')
+		buf.WriteByte('}')
+
+	case String:
+		buf.WriteByte('"')
+		s, _, _ := getStr(v)
+		buf.WriteString(s)
+		buf.WriteByte('"')
+
+	case Integer:
+
+		num, _, _ := getInt(v)
+
+		buf.WriteString(strconv.FormatInt(num, 10))
+
+	default:
+		buf.WriteString(`unknown`)
+
+	}
+
+	return buf
+}
+
+func toJsonArray(v []byte, buf *bytes.Buffer) {
+
+	buf.WriteByte('[')
+	ArrayEach(v, func(i int64, v []byte, t Type, err error) bool {
 
 		if i > 0 {
 			buf.WriteByte(',')
 		}
 
-		switch t {
-
-		case Array:
-			buf.WriteByte('[')
-			ToJSON(v).WriteTo(buf)
-			buf.WriteByte(']')
-
-		case Object:
-			buf.WriteByte('{')
-			buf.WriteByte('}')
-
-		case String:
-			buf.WriteByte('"')
-			s, _, _ := getStr(v)
-
-			fmt.Println(`str`, s)
-
-			buf.WriteString(s)
-			buf.WriteByte('"')
-
-		case Integer:
-
-			num, _, _ := getInt(v)
-
-			buf.WriteString(strconv.FormatInt(num, 10))
-
-		default:
-			buf.WriteString(`unknown`)
-
-		}
+		ToJson(v).WriteTo(buf)
 
 		// fmt.Println(i, t, mpp.GetByteLen(v), err)
 		return true
 	})
-
-	return buf
+	buf.WriteByte(']')
 }
