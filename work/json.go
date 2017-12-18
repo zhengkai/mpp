@@ -27,13 +27,13 @@ func testJSON() {
 
 		t2 := string(loadDemoData(fileJson))
 
-		if t1 != t2 {
+		if len(t1) < 1 || t1 != t2 {
 			fmt.Println(`json not match`, i, len(t1), len(t2))
 			fmt.Println(t1)
 			fmt.Println(t2)
 			return
 		}
 
-		fmt.Println(`json match`, i)
+		fmt.Println(`json match`, i, len(t1))
 	}
 }

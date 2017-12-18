@@ -1,7 +1,10 @@
 <?php
 define('TYPE_INT', 1);
 define('TYPE_STR', 2);
-define('TYPE_ARRAY', 3);
+define('TYPE_NULL', 3);
+define('TYPE_BOOL', 4);
+define('TYPE_ARRAY', 5);
+define('TYPE_MAP', 6);
 
 function debug($s) {
 	foreach (str_split($s) as $b) {
@@ -33,24 +36,36 @@ function makeRandomArray($depth = 0) {
 
 	$r = [];
 
-	$l = range(1, mt_rand(3, 5));
+	$l = range(1, mt_rand(5, 8));
 
 	foreach ($l as $i) {
 
-		if ($depth < 5) {
-			$type = mt_rand(1, 3);
-		} else {
-			$type = mt_rand(1, 2);
+		$max = 4;
+		if ($depth < 4) {
+			$max += 1;
 		}
+
+		$type = mt_rand(1, $max);
 
 		switch ($type) {
 
 		case TYPE_INT:
-			$r[] = mt_rand(1, 1000000);
+			$i = mt_rand(0, PHP_INT_MAX);
+			$i = substr($i, 0, mt_rand(1, 12));
+			$r[] = intval($i);
 			break;
 
 		case TYPE_STR:
-			$r[] = base64_encode(random_bytes(mt_rand(1, 10)));
+			$s = base64_encode(random_bytes(mt_rand(1, 10)));;
+			$r[] = str_replace('=', '', $s);
+			break;
+
+		case TYPE_NULL:
+			$r[] = NULL;
+			break;
+
+		case TYPE_BOOL:
+			$r[] = mt_rand(0, 1) === 1;
 			break;
 
 		case TYPE_ARRAY:

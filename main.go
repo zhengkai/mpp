@@ -24,7 +24,7 @@ func Get(v []byte, key ...string) (r []byte, t Type, err error) {
 
 	switch t {
 
-	case Object:
+	case Map:
 
 		var i int64
 		v = v[metaLen:]

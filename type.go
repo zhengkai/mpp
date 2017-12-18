@@ -3,6 +3,7 @@ package mpp
 import (
 	"encoding/binary"
 	"errors"
+	"fmt"
 )
 
 const (
@@ -10,10 +11,10 @@ const (
 	String
 	Integer
 	Float
-	Object
+	Map
 	Array
 	Boolean
-	Null
+	Nil
 	Unknown
 
 	InTypeFixInt = InType(iota)
@@ -64,7 +65,7 @@ var (
 	NotStringError       = errors.New("Not a string")
 	NotIntegerError      = errors.New("Not a integer")
 	NotArrayError        = errors.New("Not a array")
-	NotObjectError       = errors.New("Not a object")
+	NotMapError          = errors.New("Not a map")
 	NotFixedDataError    = errors.New("Not a fixed data")
 	IncompleteError      = errors.New("Not complete yet")
 
@@ -72,10 +73,10 @@ var (
 		String:  `String`,
 		Integer: `Integer`,
 		Float:   `Float`,
-		Object:  `Object`,
+		Map:     `Map`,
 		Array:   `Array`,
 		Boolean: `Boolean`,
-		Null:    `Null`,
+		Nil:     `Nil`,
 		Unknown: `Unknown`,
 	}
 )
@@ -92,6 +93,13 @@ func getType(it InType) (t Type) {
 	t = Unknown
 
 	switch it {
+
+	case InTypeFixStr,
+		InTypeStr8,
+		InTypeStr16,
+		InTypeStr32:
+
+		t = String
 
 	case InTypeFixInt,
 		InTypeInt8,
@@ -115,20 +123,16 @@ func getType(it InType) (t Type) {
 		InTypeMap16,
 		InTypeMap32:
 
-		t = Object
+		t = Map
 
 	case InTypeTrue,
 		InTypeFalse:
 
 		t = Boolean
 
-	case
-		InTypeFixStr,
-		InTypeStr8,
-		InTypeStr16,
-		InTypeStr32:
+	case InTypeNil:
 
-		t = String
+		t = Nil
 	}
 
 	return
@@ -145,7 +149,8 @@ func getByteLen(v []byte) (byteLen int64) {
 	switch t {
 
 	case Integer,
-		Boolean:
+		Boolean,
+		Nil:
 
 		byteLen = metaLen
 
@@ -153,7 +158,7 @@ func getByteLen(v []byte) (byteLen int64) {
 
 		byteLen = metaLen + ext
 
-	case Object:
+	case Map:
 
 		limit := ext * 2
 		var i int64
@@ -179,6 +184,8 @@ func getByteLen(v []byte) (byteLen int64) {
 		}
 
 	default:
+
+		fmt.Println(TypeName[t], t)
 
 		panic(`unknown type`)
 	}
@@ -270,7 +277,7 @@ func getFixedMeta(b InType) (it InType, t Type, metaLen int64, ext int64) {
 	}
 
 	if b <= 0x8f {
-		return InTypeFixMap, Object, 1, int64(b & 0x0f)
+		return InTypeFixMap, Map, 1, int64(b & 0x0f)
 	}
 
 	if b <= 0x9f {

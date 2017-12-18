@@ -23,7 +23,7 @@ func ToJson(v []byte) *bytes.Buffer {
 
 		toJsonArray(v, buf)
 
-	case Object:
+	case Map:
 		buf.WriteByte('{')
 		buf.WriteByte('}')
 
@@ -38,6 +38,20 @@ func ToJson(v []byte) *bytes.Buffer {
 		num, _, _ := getInt(v)
 
 		buf.WriteString(strconv.FormatInt(num, 10))
+
+	case Boolean,
+		Nil:
+
+		s := ``
+		switch InType(v[0]) {
+		case InTypeFalse:
+			s = `false`
+		case InTypeTrue:
+			s = `true`
+		case InTypeNil:
+			s = `null`
+		}
+		buf.WriteString(s)
 
 	default:
 		buf.WriteString(`unknown`)
