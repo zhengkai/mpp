@@ -64,7 +64,7 @@ func ToJson(v []byte) *bytes.Buffer {
 func toJsonArray(v []byte, buf *bytes.Buffer) {
 
 	buf.WriteByte('[')
-	ArrayEach(v, func(i int64, v []byte, t Type, err error) bool {
+	ArrayEach(v, func(i int64, v []byte, t Type) bool {
 
 		if i > 0 {
 			buf.WriteByte(',')

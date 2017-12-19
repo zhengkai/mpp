@@ -68,6 +68,8 @@ var (
 	NotMapError          = errors.New("Not a map")
 	NotFixedDataError    = errors.New("Not a fixed data")
 	IncompleteError      = errors.New("Not complete yet")
+	IllegalMapKeyError   = errors.New("Iillegal map key")
+	InTypeError          = errors.New("Unknown InType")
 
 	TypeName = map[Type]string{
 		String:  `String`,
@@ -330,6 +332,7 @@ func parseMeta(v []byte) (it InType, t Type, metaLen int64, ext int64, err error
 		ext = int64(binary.BigEndian.Uint32(v[1:metaLen]))
 
 	default:
+		err = InTypeError
 	}
 
 	return

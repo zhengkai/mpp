@@ -1,6 +1,6 @@
 package mpp
 
-func ArrayEach(in []byte, cb func(i int64, v []byte, t Type, err error) (isContinue bool)) (err error) {
+func ArrayEach(in []byte, cb func(i int64, v []byte, t Type) (isContinue bool)) (err error) {
 
 	_, t, metaLen, ext, parseErr := parseMeta(in)
 	if t != Array || parseErr != nil {
@@ -14,9 +14,13 @@ func ArrayEach(in []byte, cb func(i int64, v []byte, t Type, err error) (isConti
 	for {
 
 		_, t, _, _, parseErr := parseMeta(in)
+		if parseErr != nil {
+			err = parseErr
+			return
+		}
 
-		isContinue := cb(i, in, t, parseErr)
-		if !isContinue || parseErr != nil {
+		isContinue := cb(i, in, t)
+		if !isContinue {
 			break
 		}
 
@@ -25,9 +29,7 @@ func ArrayEach(in []byte, cb func(i int64, v []byte, t Type, err error) (isConti
 			break
 		}
 
-		l := getByteLen(in)
-
-		in = in[l:]
+		in = in[getByteLen(in):]
 	}
 
 	return
