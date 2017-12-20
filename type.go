@@ -331,7 +331,22 @@ func parseMeta(v []byte) (it InType, t Type, metaLen int64, ext int64, err error
 	case InTypeMap32:
 		ext = int64(binary.BigEndian.Uint32(v[1:metaLen]))
 
+	case InTypeNil,
+		InTypeTrue,
+		InTypeFalse,
+		InTypeInt16,
+		InTypeInt32,
+		InTypeInt64,
+		InTypeInt8,
+		InTypeUint16,
+		InTypeUint32,
+		InTypeUint64,
+		InTypeUint8:
+
+		ext = 0
+
 	default:
+		fmt.Println(`unknown type`, it)
 		err = InTypeError
 	}
 

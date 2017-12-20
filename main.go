@@ -44,7 +44,7 @@ func Get(v []byte, key ...string) (r []byte, t Type, err error) {
 
 			var subErr error
 
-			k, end, subErr := getStr(v)
+			k, end, subErr := getStr(v, false)
 
 			if subErr != nil {
 				err = WrongFormatError

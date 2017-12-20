@@ -56,8 +56,7 @@ function makeRandomArray($depth = 0) {
 			break;
 
 		case TYPE_STR:
-			$s = base64_encode(random_bytes(mt_rand(1, 10)));;
-			$r[] = str_replace('=', '', $s);
+			$r[] = makeRandStr();
 			break;
 
 		case TYPE_NULL:
@@ -74,5 +73,22 @@ function makeRandomArray($depth = 0) {
 		}
 	}
 
+	if (mt_rand(0, 1)) {
+		$map = [];
+		foreach ($r as $row) {
+			$map[makeRandStr()] = $row;
+		}
+		$r = $map;
+	}
+
 	return $r;
+}
+
+function makeRandStr() {
+	$s = base64_encode(random_bytes(50));
+	$s = substr($s, 0, mt_rand(1, 20));
+	$s = str_replace('=', '', $s);
+	$s = str_replace('a', '"', $s);
+	$s = str_replace('b', '\\', $s);
+	return $s;
 }

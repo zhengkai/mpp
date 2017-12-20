@@ -4,11 +4,9 @@ package main
 
 func main() {
 
-	testMap()
-
-	return
-	testJSON()
 	testStr()
 	testInt()
 	testArray()
+	testMap()
+	testJSON()
 }
