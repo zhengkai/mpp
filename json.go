@@ -48,12 +48,12 @@ func ToJson(v []byte) *bytes.Buffer {
 		Nil:
 
 		s := ``
-		switch InType(v[0]) {
-		case InTypeFalse:
+		switch Format(v[0]) {
+		case FormatFalse:
 			s = `false`
-		case InTypeTrue:
+		case FormatTrue:
 			s = `true`
-		case InTypeNil:
+		case FormatNil:
 			s = `null`
 		}
 		buf.WriteString(s)
@@ -87,12 +87,12 @@ func toJsonStr(v []byte, buf *bytes.Buffer, t Type) {
 		Nil:
 
 		s := ``
-		switch InType(v[0]) {
-		case InTypeFalse:
+		switch Format(v[0]) {
+		case FormatFalse:
 			s = `false`
-		case InTypeTrue:
+		case FormatTrue:
 			s = `true`
-		case InTypeNil:
+		case FormatNil:
 			s = `null`
 		}
 		buf.WriteRune('"')

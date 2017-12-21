@@ -15,11 +15,11 @@ func GetFloat(v []byte) (f float64, err error) {
 
 	switch it {
 
-	case InTypeFloat32:
+	case FormatFloat32:
 		bits := binary.BigEndian.Uint32(v[1:metaLen])
 		f = float64(math.Float32frombits(bits))
 
-	case InTypeFloat64:
+	case FormatFloat64:
 		bits := binary.BigEndian.Uint64(v[1:metaLen])
 		f = math.Float64frombits(bits)
 	}

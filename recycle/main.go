@@ -54,7 +54,7 @@ func searchKey(buf *bytes.Buffer) (r []byte, err error) {
 			break
 		}
 		if searchTag == searchEmpty {
-			isMap, item, err = getSearchType(InTypeMap32, item, buf)
+			isMap, item, err = getSearchType(FormatMap32, item, buf)
 			if err != nil {
 				return
 			}
@@ -65,19 +65,19 @@ func searchKey(buf *bytes.Buffer) (r []byte, err error) {
 			}
 			if item == 0 {
 
-				t := InTypeArray16
+				t := FormatArray16
 
 				switch t {
 
-				case InTypeArray16,
-					InTypeMap16:
+				case FormatArray16,
+					FormatMap16:
 
 					read := buf.Next(2)
 					item = binary.BigEndian.Uint32([]byte{0, 0, read[0], read[1]})
 
 				case
-					InTypeArray32,
-					InTypeMap32:
+					FormatArray32,
+					FormatMap32:
 
 					read := buf.Next(4)
 					item = binary.BigEndian.Uint32(read)
@@ -96,51 +96,51 @@ func searchKey(buf *bytes.Buffer) (r []byte, err error) {
 	return
 }
 
-func isPack(it InType) bool {
+func isPack(it Format) bool {
 	switch it {
-	case InTypeFixArray,
-		InTypeArray16,
-		InTypeArray32,
-		InTypeFixMap,
-		InTypeMap16,
-		InTypeMap32:
+	case FormatFixArray,
+		FormatArray16,
+		FormatArray32,
+		FormatFixMap,
+		FormatMap16,
+		FormatMap32:
 
 		return true
 	}
 	return false
 }
 
-func getSearchType(t InType, item uint32, buf *bytes.Buffer) (isMap bool, ritem uint32, err error) {
+func getSearchType(t Format, item uint32, buf *bytes.Buffer) (isMap bool, ritem uint32, err error) {
 
 	switch t {
 
-	case InTypeFixArray:
+	case FormatFixArray:
 
 		isMap = false
 
-	case InTypeArray16:
+	case FormatArray16:
 
 		isMap = false
 		read := buf.Next(2)
 		item = binary.BigEndian.Uint32([]byte{0, 0, read[0], read[1]})
 
-	case InTypeArray32:
+	case FormatArray32:
 
 		isMap = false
 		read := buf.Next(4)
 		item = binary.BigEndian.Uint32(read)
 
-	case InTypeFixMap:
+	case FormatFixMap:
 
 		isMap = true
 
-	case InTypeMap16:
+	case FormatMap16:
 
 		isMap = true
 		read := buf.Next(2)
 		item = binary.BigEndian.Uint32([]byte{0, 0, read[0], read[1]})
 
-	case InTypeMap32:
+	case FormatMap32:
 
 		isMap = true
 		read := buf.Next(4)

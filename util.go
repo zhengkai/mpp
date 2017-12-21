@@ -1,13 +1,13 @@
 package mpp
 
-func isPack(it InType) bool {
+func isPack(it Format) bool {
 	switch it {
-	case InTypeFixArray,
-		InTypeArray16,
-		InTypeArray32,
-		InTypeFixMap,
-		InTypeMap16,
-		InTypeMap32:
+	case FormatFixArray,
+		FormatArray16,
+		FormatArray32,
+		FormatFixMap,
+		FormatMap16,
+		FormatMap32:
 
 		return true
 	}

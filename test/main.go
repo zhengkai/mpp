@@ -10,4 +10,6 @@ func main() {
 	testMap()
 	testFloat()
 	testJSON()
+
+	testType()
 }

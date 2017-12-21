@@ -1,4 +1,4 @@
-package mpp
+package main
 
 import (
 	"fmt"
@@ -26,6 +26,7 @@ func JSONtoMSGP(s []byte) []byte {
 	return s
 }
 
+/*
 func MSGPtoJSON(s []byte) []byte {
 	l := len(s)
 	i := 0
@@ -38,3 +39,4 @@ func MSGPtoJSON(s []byte) []byte {
 	}
 	return s
 }
+*/

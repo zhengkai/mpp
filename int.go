@@ -16,41 +16,41 @@ func GetInt(v []byte) (i int64, err error) {
 
 	switch it {
 
-	case InTypeFixInt:
+	case FormatFixInt:
 		i = int64(ext)
 
-	case InTypeInt8:
+	case FormatInt8:
 		i = int64(int8(v[1]))
 
-	case InTypeInt16:
+	case FormatInt16:
 
 		var i32 int32
 		buf := bytes.NewBuffer([]byte{0, 0, v[1], v[2]})
 		binary.Read(buf, binary.BigEndian, &i32)
 		i = int64(i32)
 
-	case InTypeInt32:
+	case FormatInt32:
 
 		var i32 int32
 		buf := bytes.NewBuffer(v[1:metaLen])
 		binary.Read(buf, binary.BigEndian, &i32)
 		i = int64(i32)
 
-	case InTypeInt64:
+	case FormatInt64:
 
 		buf := bytes.NewBuffer(v[1:metaLen])
 		binary.Read(buf, binary.BigEndian, &i)
 
-	case InTypeUint8:
+	case FormatUint8:
 		i = int64(uint8(v[1]))
 
-	case InTypeUint16:
+	case FormatUint16:
 		i = int64(binary.BigEndian.Uint16(v[1:metaLen]))
 
-	case InTypeUint32:
+	case FormatUint32:
 		i = int64(binary.BigEndian.Uint32(v[1:metaLen]))
 
-	case InTypeUint64:
+	case FormatUint64:
 		i = int64(binary.BigEndian.Uint64(v[1:metaLen]))
 
 	default:

@@ -1,8 +1,8 @@
 SHELL:=/bin/bash
 
 default:
-	go build -o work *.go
-	./work
+	go build -o test *.go
+	./test
 
 clean:
 	go clean
