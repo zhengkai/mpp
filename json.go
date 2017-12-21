@@ -36,9 +36,13 @@ func ToJson(v []byte) *bytes.Buffer {
 
 	case Integer:
 
-		num, _, _ := getInt(v)
-
+		num, _ := GetInt(v)
 		buf.WriteString(strconv.FormatInt(num, 10))
+
+	case Float:
+
+		num, _ := GetFloat(v)
+		buf.WriteString(fmt.Sprint(num))
 
 	case Boolean,
 		Nil:
@@ -73,7 +77,7 @@ func toJsonStr(v []byte, buf *bytes.Buffer, t Type) {
 
 	case Integer:
 
-		num, _, _ := getInt(v)
+		num, _ := GetInt(v)
 
 		buf.WriteRune('"')
 		buf.WriteString(strconv.FormatInt(num, 10))

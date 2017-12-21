@@ -25,6 +25,8 @@ foreach ($list as $i) {
 	}
 }
 
+save('float-pi', M_PI);
+
 save('string', ['abc' => 'def', 'a1' => 'a2', 'foo' => 'bar']);
 save('int1', 1);
 save('int-1', -1);

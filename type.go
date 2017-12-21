@@ -64,6 +64,7 @@ var (
 	WrongFormatError     = errors.New("Wrong format")
 	NotStringError       = errors.New("Not a string")
 	NotIntegerError      = errors.New("Not a integer")
+	NotFloatError        = errors.New("Not a float")
 	NotArrayError        = errors.New("Not a array")
 	NotMapError          = errors.New("Not a map")
 	NotFixedDataError    = errors.New("Not a fixed data")
@@ -82,7 +83,7 @@ var (
 		Unknown: `Unknown`,
 	}
 
-	InTypeName = map[Type]string{
+	InTypeName = map[InType]string{
 		InTypeFixInt:         `InTypeFixInt`,
 		InTypeFixMap:         `InTypeFixMap`,
 		InTypeFixArray:       `InTypeFixArray`,
@@ -155,6 +156,11 @@ func getType(it InType) (t Type) {
 
 		t = Integer
 
+	case InTypeFloat32,
+		InTypeFloat64:
+
+		t = Float
+
 	case InTypeFixArray,
 		InTypeArray16,
 		InTypeArray32:
@@ -192,6 +198,7 @@ func getByteLen(v []byte) (byteLen int64) {
 
 	case Integer,
 		Boolean,
+		Float,
 		Nil:
 
 		byteLen = metaLen
@@ -227,9 +234,7 @@ func getByteLen(v []byte) (byteLen int64) {
 
 	default:
 
-		fmt.Println(TypeName[t], t)
-
-		panic(`unknown type`)
+		panic(`unknown type ` + TypeName[t])
 	}
 
 	return
@@ -335,8 +340,6 @@ func getFixedMeta(b InType) (it InType, t Type, metaLen int64, ext int64) {
 
 func parseMeta(v []byte) (it InType, t Type, metaLen int64, ext int64, err error) {
 
-	// TODO: combine GetInType / getMetaLen / getType and special get len func
-
 	first := InType(v[0])
 
 	if first <= 0xbf {
@@ -381,12 +384,14 @@ func parseMeta(v []byte) (it InType, t Type, metaLen int64, ext int64, err error
 		InTypeUint16,
 		InTypeUint32,
 		InTypeUint64,
-		InTypeUint8:
+		InTypeUint8,
+		InTypeFloat32,
+		InTypeFloat64:
 
 		ext = 0
 
 	default:
-		fmt.Println(`unknown type`, it)
+		fmt.Printf("unknown type 0x%x %s\n", it, InTypeName[it])
 		err = InTypeError
 	}
 

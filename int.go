@@ -7,15 +7,9 @@ import (
 )
 
 func GetInt(v []byte) (i int64, err error) {
-	i, _, err = getInt(v)
-	return
-}
-
-func getInt(v []byte) (i int64, metaLen int64, err error) {
 
 	it, t, metaLen, ext, parseErr := parseMeta(v)
 	if t != Integer || parseErr != nil {
-		fmt.Println(`test`, it)
 		err = NotIntegerError
 		return
 	}

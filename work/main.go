@@ -8,5 +8,6 @@ func main() {
 	testInt()
 	testArray()
 	testMap()
+	testFloat()
 	testJSON()
 }

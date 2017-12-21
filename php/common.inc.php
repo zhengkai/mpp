@@ -3,8 +3,7 @@ define('TYPE_INT', 1);
 define('TYPE_STR', 2);
 define('TYPE_NULL', 3);
 define('TYPE_BOOL', 4);
-define('TYPE_ARRAY', 5);
-define('TYPE_MAP', 6);
+define('TYPE_FLOAT', 5);
 
 function debug($s) {
 	foreach (str_split($s) as $b) {
@@ -40,7 +39,7 @@ function makeRandomArray($depth = 0) {
 
 	foreach ($l as $i) {
 
-		$max = 4;
+		$max = 5;
 		if ($depth < 4) {
 			$max += 1;
 		}
@@ -67,7 +66,11 @@ function makeRandomArray($depth = 0) {
 			$r[] = mt_rand(0, 1) === 1;
 			break;
 
-		case TYPE_ARRAY:
+		case TYPE_FLOAT:
+			$r[] = mt_rand(1, 1000000000) / mt_rand(1, 1000000000);
+			break;
+
+		default:
 			$r[] = makeRandomArray($depth + 1);
 			break;
 		}
