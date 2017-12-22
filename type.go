@@ -3,12 +3,13 @@ package mpp
 import (
 	"encoding/binary"
 	"errors"
-	"fmt"
 )
 
 const (
 	NotExist = Type(iota)
 	String
+	Binary
+	Ext
 	Integer
 	Float
 	Map
@@ -55,8 +56,6 @@ const (
 	FormatArray32  = Format(0xdd)
 	FormatMap16    = Format(0xde)
 	FormatMap32    = Format(0xdf)
-
-	FormatDevUnknown = FormatNa
 )
 
 var (
@@ -73,7 +72,9 @@ var (
 	FormatError          = errors.New("Unknown Format")
 
 	TypeName = map[Type]string{
+		Ext:     `Ext`,
 		String:  `String`,
+		Binary:  `Binary`,
 		Integer: `Integer`,
 		Float:   `Float`,
 		Map:     `Map`,
@@ -133,6 +134,7 @@ func (f Format) String() string {
 }
 
 type Type uint8
+type ExtType int8
 type Format uint8
 
 func (f Format) Type() (t Type) {
@@ -147,6 +149,12 @@ func (f Format) Type() (t Type) {
 		FormatStr32:
 
 		t = String
+
+	case FormatBin8,
+		FormatBin16,
+		FormatBin32:
+
+		t = Binary
 
 	case FormatFixInt,
 		FormatInt8,
@@ -207,7 +215,9 @@ func getByteLen(v []byte) (byteLen int64) {
 
 		byteLen = metaLen
 
-	case String:
+	case String,
+		Binary,
+		Ext:
 
 		byteLen = metaLen + ext
 
@@ -244,14 +254,14 @@ func getByteLen(v []byte) (byteLen int64) {
 	return
 }
 
-func (v Format) MetaLen() (len int64) {
+func (f Format) MetaLen() (len int64) {
 
-	switch v {
+	switch f {
 
-	case
-		FormatFixArray,
+	case FormatFixArray,
 		FormatFixMap,
 		FormatFixInt,
+		FormatNegativeFixInt,
 		FormatFixStr,
 		FormatNil,
 		FormatNa,
@@ -260,33 +270,35 @@ func (v Format) MetaLen() (len int64) {
 
 		len = 1
 
-	case
-		FormatBin8,
-		FormatExt8,
+	case FormatBin8,
 		FormatUint8,
 		FormatInt8,
+		FormatStr8,
+		FormatFixExt1,
+		FormatFixExt2,
+		FormatFixExt4,
 		FormatFixExt8,
-		FormatStr8:
+		FormatFixExt16:
 
 		len = 2
 
-	case
+	case FormatExt8,
 		FormatArray16,
 		FormatMap16,
 		FormatBin16,
-		FormatExt16,
 		FormatUint16,
 		FormatInt16,
-		FormatStr16,
-		FormatFixExt16:
+		FormatStr16:
 
 		len = 3
 
-	case
-		FormatArray32,
+	case FormatExt16:
+
+		len = 4
+
+	case FormatArray32,
 		FormatMap32,
 		FormatBin32,
-		FormatExt32,
 		FormatFloat32,
 		FormatUint32,
 		FormatStr32,
@@ -294,8 +306,11 @@ func (v Format) MetaLen() (len int64) {
 
 		len = 5
 
-	case
-		FormatFloat64,
+	case FormatExt32:
+
+		len = 6
+
+	case FormatFloat64,
 		FormatUint64,
 		FormatInt64:
 
@@ -303,7 +318,8 @@ func (v Format) MetaLen() (len int64) {
 
 	default:
 
-		panic(`incomplete type` + v.String())
+		len = 0
+		// panic(`incomplete type ` + f.String())
 	}
 
 	return
@@ -347,46 +363,27 @@ func parseMeta(v []byte) (it Format, t Type, metaLen int64, ext int64, err error
 
 	switch it {
 
-	case FormatStr8:
+	case FormatStr8,
+		FormatBin8,
+		FormatExt8:
+
 		ext = int64(uint8(v[1]))
 
-	case FormatStr16:
-		ext = int64(binary.BigEndian.Uint16(v[1:it.MetaLen()]))
+	case FormatStr16,
+		FormatBin16,
+		FormatExt16,
+		FormatMap16,
+		FormatArray16:
 
-	case FormatStr32:
-		ext = int64(binary.BigEndian.Uint32(v[1:it.MetaLen()]))
+		ext = int64(binary.BigEndian.Uint16(v[1:3]))
 
-	case FormatArray16:
-		ext = int64(binary.BigEndian.Uint16(v[1:it.MetaLen()]))
+	case FormatStr32,
+		FormatBin32,
+		FormatExt32,
+		FormatMap32,
+		FormatArray32:
 
-	case FormatArray32:
-		ext = int64(binary.BigEndian.Uint32(v[1:it.MetaLen()]))
-
-	case FormatMap16:
-		ext = int64(binary.BigEndian.Uint16(v[1:it.MetaLen()]))
-
-	case FormatMap32:
-		ext = int64(binary.BigEndian.Uint32(v[1:it.MetaLen()]))
-
-	case FormatNil,
-		FormatTrue,
-		FormatFalse,
-		FormatInt16,
-		FormatInt32,
-		FormatInt64,
-		FormatInt8,
-		FormatUint16,
-		FormatUint32,
-		FormatUint64,
-		FormatUint8,
-		FormatFloat32,
-		FormatFloat64:
-
-		ext = 0
-
-	default:
-		fmt.Printf("unknown type 0x%x %s\n", it, FormatName[it])
-		err = FormatError
+		ext = int64(binary.BigEndian.Uint32(v[1:5]))
 	}
 
 	return
