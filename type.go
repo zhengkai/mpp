@@ -69,6 +69,7 @@ var (
 	NotFixedDataError    = errors.New("Not a fixed data")
 	IncompleteError      = errors.New("Not complete yet")
 	IllegalMapKeyError   = errors.New("Iillegal map key")
+	CanNotCountError     = errors.New("this format can not be count")
 	FormatError          = errors.New("Unknown Format")
 
 	TypeName = map[Type]string{
@@ -157,6 +158,7 @@ func (f Format) Type() (t Type) {
 		t = Binary
 
 	case FormatFixInt,
+		FormatNegativeFixInt,
 		FormatInt8,
 		FormatInt16,
 		FormatInt32,
@@ -204,9 +206,11 @@ func GetByteLen(v []byte) (byteLen int64) {
 
 func getByteLen(v []byte) (byteLen int64) {
 
-	_, t, metaLen, ext, _ := parseMeta(v)
+	f := GetFormat(v[0])
 
-	switch t {
+	metaLen := f.MetaLen()
+
+	switch f.Type() {
 
 	case Integer,
 		Boolean,
@@ -219,11 +223,13 @@ func getByteLen(v []byte) (byteLen int64) {
 		Binary,
 		Ext:
 
-		byteLen = metaLen + ext
+		count, _ := getCount(f, v)
+		byteLen = metaLen + count
 
 	case Map:
 
-		limit := ext * 2
+		limit, _ := getCount(f, v)
+		limit *= 2
 		var i int64
 		byteLen = metaLen
 		for {
@@ -236,11 +242,12 @@ func getByteLen(v []byte) (byteLen int64) {
 
 	case Array:
 
+		limit, _ := getCount(f, v)
 		var i int64
 		byteLen = metaLen
 		for {
 			i++
-			if i > ext {
+			if i > limit {
 				break
 			}
 			byteLen += getByteLen(v[byteLen:])
@@ -248,10 +255,35 @@ func getByteLen(v []byte) (byteLen int64) {
 
 	default:
 
-		panic(`unknown type ` + t.String())
+		panic(`unknown type ` + f.Type().String())
 	}
 
 	return
+}
+
+func GetFormat(v byte) Format {
+
+	if v <= 0x7f {
+		return FormatFixInt
+	}
+
+	if v <= 0x8f {
+		return FormatFixMap
+	}
+
+	if v <= 0x9f {
+		return FormatFixArray
+	}
+
+	if v <= 0xbf {
+		return FormatFixStr
+	}
+
+	if v >= 0xe0 {
+		return FormatNegativeFixInt
+	}
+
+	return Format(v)
 }
 
 func (f Format) MetaLen() (len int64) {
@@ -325,49 +357,27 @@ func (f Format) MetaLen() (len int64) {
 	return
 }
 
-func getFixedMeta(b Format) (it Format, ext int64) {
+func getCount(f Format, v []byte) (count int64, err error) {
 
-	if b <= 0x7f {
-		return FormatFixInt, int64(b & 0x7f)
-	}
+	switch f {
 
-	if b <= 0x8f {
-		return FormatFixMap, int64(b & 0x0f)
-	}
+	case FormatFixArray:
 
-	if b <= 0x9f {
-		return FormatFixArray, int64(b & 0x0f)
-	}
+		count = int64(v[0] & 0x0f)
 
-	if b <= 0xbf {
-		return FormatFixStr, int64(b & 0x1f)
-	}
+	case FormatFixMap:
 
-	return
-}
+		count = int64(v[0] & 0x0f)
 
-func parseMeta(v []byte) (it Format, t Type, metaLen int64, ext int64, err error) {
+	case FormatFixStr:
 
-	first := Format(v[0])
-
-	if first <= 0xbf {
-		it, ext = getFixedMeta(first)
-		t = it.Type()
-		metaLen = it.MetaLen()
-		return
-	}
-
-	it = first
-	t = it.Type()
-	metaLen = it.MetaLen()
-
-	switch it {
+		count = int64(v[0] & 0x1f)
 
 	case FormatStr8,
 		FormatBin8,
 		FormatExt8:
 
-		ext = int64(uint8(v[1]))
+		count = int64(uint8(v[1]))
 
 	case FormatStr16,
 		FormatBin16,
@@ -375,7 +385,7 @@ func parseMeta(v []byte) (it Format, t Type, metaLen int64, ext int64, err error
 		FormatMap16,
 		FormatArray16:
 
-		ext = int64(binary.BigEndian.Uint16(v[1:3]))
+		count = int64(binary.BigEndian.Uint16(v[1:3]))
 
 	case FormatStr32,
 		FormatBin32,
@@ -383,7 +393,11 @@ func parseMeta(v []byte) (it Format, t Type, metaLen int64, ext int64, err error
 		FormatMap32,
 		FormatArray32:
 
-		ext = int64(binary.BigEndian.Uint32(v[1:5]))
+		count = int64(binary.BigEndian.Uint32(v[1:5]))
+
+	default:
+
+		err = CanNotCountError
 	}
 
 	return

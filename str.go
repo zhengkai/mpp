@@ -14,14 +14,18 @@ func getSlashedStr(v []byte) (s string, err error) {
 
 func getStr(v []byte, isSlash bool) (s string, end int64, err error) {
 
-	_, t, metaLen, ext, parseErr := parseMeta(v)
+	f := GetFormat(v[0])
 
-	if t != String || parseErr != nil {
+	count, pErr := getCount(f, v)
+
+	if pErr != nil || f.Type() != String {
 		err = NotStringError
 		return
 	}
 
-	end = metaLen + ext
+	metaLen := f.MetaLen()
+
+	end = metaLen + count
 
 	v = v[metaLen:end]
 

@@ -25,18 +25,3 @@ func JSONtoMSGP(s []byte) []byte {
 	// var buff bytes.Buffer
 	return s
 }
-
-/*
-func MSGPtoJSON(s []byte) []byte {
-	l := len(s)
-	i := 0
-	for i < l {
-		v := s[i]
-		t, _, _, j, _ := parseMeta([]byte{v})
-		fmt.Printf("v hex = %02x, v = %08b, t = %08b, i = %02x\n", v, v, t, j)
-
-		i++
-	}
-	return s
-}
-*/

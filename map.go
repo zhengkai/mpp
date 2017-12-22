@@ -2,32 +2,27 @@ package mpp
 
 func MapEach(in []byte, cb func(i int64, k []byte, kt Type, v []byte, vt Type) (isContinue bool)) (err error) {
 
-	_, t, metaLen, ext, parseErr := parseMeta(in)
-	if t != Map || parseErr != nil {
+	f := GetFormat(in[0])
+
+	count, pErr := getCount(f, in)
+
+	if pErr != nil || f.Type() != Map {
 		return NotMapError
 	}
 
-	in = in[metaLen:]
+	in = in[f.MetaLen():]
 
 	var i int64
 
 	for {
 
-		_, kt, _, _, parseErr := parseMeta(in)
-		if parseErr != nil {
-			err = parseErr
-			return
-		}
-
 		k := in
+
+		kt := GetFormat(k[0]).Type()
 
 		in = in[getByteLen(in):]
 
-		_, vt, _, _, parseErr := parseMeta(in)
-		if parseErr != nil {
-			err = parseErr
-			return
-		}
+		vt := GetFormat(in[0]).Type()
 
 		isContinue := cb(i, k, kt, in, vt)
 		if !isContinue {
@@ -35,7 +30,7 @@ func MapEach(in []byte, cb func(i int64, k []byte, kt Type, v []byte, vt Type) (
 		}
 
 		i++
-		if i >= ext {
+		if i >= count {
 			break
 		}
 

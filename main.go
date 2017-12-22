@@ -8,12 +8,8 @@ func Get(v []byte, key ...string) (r []byte, t Type, err error) {
 
 	tier := len(key)
 
-	_, t, metaLen, ext, parseErr := parseMeta(v)
-
-	if parseErr != nil {
-		err = parseErr
-		return
-	}
+	f := GetFormat(v[0])
+	t = f.Type()
 
 	if tier < 1 {
 		r = v
@@ -27,12 +23,14 @@ func Get(v []byte, key ...string) (r []byte, t Type, err error) {
 	case Map:
 
 		var i int64
-		v = v[metaLen:]
+		v = v[f.MetaLen():]
 
 		findKey, key = key[0], key[1:]
 
+		count, _ := getCount(f, v)
+
 		for {
-			if i > ext {
+			if i > count {
 				err = KeyPathNotFoundError
 				break
 			}
@@ -76,25 +74,21 @@ func Get(v []byte, key ...string) (r []byte, t Type, err error) {
 		}
 		i = int64(tI)
 
-		if i > 0 {
+		count, _ := getCount(f, v)
 
-			v = v[metaLen:]
-			if i > ext {
-				err = KeyPathNotFoundError
-				return
-			}
+		v = v[f.MetaLen():]
 
-			var subErr error
-			v, subErr = skip(v, i)
+		if i > count {
+			err = KeyPathNotFoundError
+			return
+		}
 
-			if subErr != nil {
-				err = WrongFormatError
-				return
-			}
+		var subErr error
+		v, subErr = skip(v, i)
 
-		} else {
-
-			v = v[metaLen:]
+		if subErr != nil {
+			err = WrongFormatError
+			return
 		}
 
 		return Get(v, key...)
