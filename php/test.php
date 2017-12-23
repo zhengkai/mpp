@@ -26,3 +26,5 @@ echo 0b01110111 & 0b00011111, "\n";
 
 debug(msgpack_pack(1));
 debug(msgpack_pack(-1));
+
+debug(msgpack_pack(123456));

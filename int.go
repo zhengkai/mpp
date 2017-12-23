@@ -69,7 +69,7 @@ func GetInt(v []byte, key ...string) (i int64, err error) {
 
 		err = NotIntError
 
-		panic(`unknown type ` + f.String() + ` ` + f.Type().String())
+		// panic(`unknown type ` + f.String() + ` ` + f.Type().String())
 	}
 
 	return

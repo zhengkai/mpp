@@ -191,23 +191,21 @@ func (f Format) Type() (t Type) {
 
 func GetFormat(v byte) Format {
 
-	if v <= 0x7f {
+	switch {
+
+	case v <= 0x7f:
 		return FormatFixInt
-	}
 
-	if v <= 0x8f {
+	case v <= 0x8f:
 		return FormatFixMap
-	}
 
-	if v <= 0x9f {
+	case v <= 0x9f:
 		return FormatFixArray
-	}
 
-	if v <= 0xbf {
+	case v <= 0xbf:
 		return FormatFixStr
-	}
 
-	if v >= 0xe0 {
+	case v >= 0xe0:
 		return FormatNegativeFixInt
 	}
 
