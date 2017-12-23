@@ -2,6 +2,7 @@ package mpp
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"strconv"
 )
@@ -29,6 +30,7 @@ func ToJson(v []byte) *bytes.Buffer {
 		toJsonMap(v, buf)
 
 	case String:
+
 		buf.WriteByte('"')
 		s, _ := getSlashedStr(v)
 		buf.WriteString(s)
@@ -37,26 +39,24 @@ func ToJson(v []byte) *bytes.Buffer {
 	case Integer:
 
 		num, _ := GetInt(v)
-		buf.WriteString(strconv.FormatInt(num, 10))
+		j, _ := json.Marshal(num)
+		buf.Write(j)
 
 	case Float:
 
 		num, _ := GetFloat(v)
-		buf.WriteString(fmt.Sprint(num))
+		j, _ := json.Marshal(num)
+		buf.Write(j)
 
-	case Boolean,
-		Nil:
+	case Boolean:
 
-		s := ``
-		switch Format(v[0]) {
-		case FormatFalse:
-			s = `false`
-		case FormatTrue:
-			s = `true`
-		case FormatNil:
-			s = `null`
-		}
-		buf.WriteString(s)
+		b, _ := GetBool(v)
+		j, _ := json.Marshal(b)
+		buf.Write(j)
+
+	case Nil:
+
+		buf.WriteString(`null`)
 
 	default:
 		buf.WriteString(`unknown`)

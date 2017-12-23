@@ -24,7 +24,7 @@ function save($file, $v, $msgpack = true) {
 		$v = msgpack_pack($v);
 	}
 	file_put_contents($file, $v);
-	echo $file, "\n";
+	echo $file, ' ', filesize($file), "\n";
 }
 
 function bin($s) {
@@ -35,7 +35,7 @@ function makeRandomArray($depth = 0) {
 
 	$r = [];
 
-	$l = range(1, mt_rand(5, 8));
+	$l = range(1, mt_rand(10, 20));
 
 	foreach ($l as $i) {
 
@@ -49,7 +49,7 @@ function makeRandomArray($depth = 0) {
 		switch ($type) {
 
 		case TYPE_INT:
-			$i = mt_rand(0, PHP_INT_MAX);
+			$i = mt_rand(PHP_INT_MIN, PHP_INT_MAX);
 			$i = substr($i, 0, mt_rand(1, 12));
 			$r[] = intval($i);
 			break;
@@ -67,7 +67,19 @@ function makeRandomArray($depth = 0) {
 			break;
 
 		case TYPE_FLOAT:
-			$r[] = mt_rand(1, 1000000000) / mt_rand(1, 1000000000);
+			$rand = 1000000000;
+
+			do {
+				$ra = mt_rand(- $rand, $rand);
+				$ra = substr($ra, 0, mt_rand(2, strlen($ra)));
+				$rb = mt_rand(- $rand, $rand);
+				$rb = substr($rb, 0, mt_rand(2, strlen($rb)));
+			} while (!$ra || !$rb);
+
+			$ra /= $rb;
+			$ra = floatval(substr($ra, 0, -3));
+
+			$r[] = $ra;
 			break;
 
 		default:
