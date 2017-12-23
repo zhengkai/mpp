@@ -31,8 +31,9 @@ func skip(v []byte, j int64) ([]byte, error) {
 func GetByteLen(v []byte) (byteLen int64) {
 
 	f := GetFormat(v[0])
+	t := f.Type()
 
-	switch f.Type() {
+	switch t {
 
 	case Int,
 		Float:
@@ -51,23 +52,13 @@ func GetByteLen(v []byte) (byteLen int64) {
 		count, metaLen, _ := getCount(f, v)
 		byteLen = metaLen + count
 
-	case Map:
+	case Map,
+		Array:
 
 		limit, metaLen, _ := getCount(f, v)
-		limit *= 2
-		var i int64
-		byteLen = metaLen
-		for {
-			i++
-			if i > limit {
-				break
-			}
-			byteLen += GetByteLen(v[byteLen:])
+		if t == Map {
+			limit *= 2
 		}
-
-	case Array:
-
-		limit, metaLen, _ := getCount(f, v)
 		var i int64
 		byteLen = metaLen
 		for {

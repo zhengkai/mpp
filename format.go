@@ -1,7 +1,8 @@
 package mpp
 
 const (
-	FormatFixInt = Format(iota)
+	FormatUnknown = Format(iota)
+	FormatFixInt
 	FormatFixMap
 	FormatFixArray
 	FormatFixStr

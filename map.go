@@ -1,6 +1,10 @@
 package mpp
 
-func MapEach(in []byte, cb func(i int64, k []byte, kt Type, v []byte, vt Type) (isContinue bool), key ...string) (err error) {
+func MapEach(
+	in []byte,
+	cb func(i int64, k []byte, kt Type, v []byte, vt Type) (isContinue bool),
+	key ...string,
+) (err error) {
 
 	if len(key) > 0 {
 		in, _, err = Get(in, key...)
