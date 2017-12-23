@@ -15,23 +15,23 @@ foreach (range(0, 6) as $i) {
 	$list[] = $i;
 }
 
+save('int/n0', 0);
 foreach ($list as $i) {
-	foreach ([-1, 0, 1] as $mod) {
-		$j = $i + $mod;
-		if (!is_integer($j) || $j < 0 || $j > PHP_INT_MAX) {
-			continue;
+	foreach ([-1, 1] as $arrow) {
+		foreach ([-1, 0, 1] as $mod) {
+			$j = $i + $mod;
+			$j *= $arrow;
+			if (!is_integer($j) || $j < PHP_INT_MIN || $j > PHP_INT_MAX) {
+				continue;
+			}
+			save('int/n' . $j, $j);
 		}
-		save('int/n' . $j, $j);
 	}
 }
 
 save('float-pi', M_PI);
 
 save('string', ['abc' => 'def', 'a1' => 'a2', 'foo' => 'bar']);
-save('int1', 1);
-save('int-1', -1);
-save('int128', 128);
-save('int109', 109);
 save('array-a', [1,2,'a']);
 save('array-b', ['a','b',['x','y'],'c']);
 save('array-c', ['a','b',['foo' => 'x', 'bar' => 'y'],'c']);

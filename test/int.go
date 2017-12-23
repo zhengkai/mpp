@@ -9,6 +9,7 @@ import (
 func testInt() {
 
 	var list = [...]int64{
+		0,
 		1,
 		2,
 		3,
@@ -33,27 +34,34 @@ func testInt() {
 		9223372036854775807,
 	}
 
-	for _, i := range list {
-		file := fmt.Sprintf(`int/n%d`, i)
+	for _, arrow := range [...]int64{1, -1} {
 
-		v := loadDemo(file)
+		for _, i := range list {
 
-		if len(v) < 1 {
-			fmt.Println(`load file`, file, `fail`)
-			return
+			i *= arrow
+			file := fmt.Sprintf(`int/n%d`, i)
+
+			v := loadDemo(file)
+
+			f := mpp.GetFormat(v[0])
+
+			if len(v) < 1 {
+				fmt.Println(`load file`, file, `fail`, f)
+				return
+			}
+
+			j, err := mpp.GetInt(v)
+			if err != nil {
+				fmt.Println(`error when load int`, f, i, err)
+				return
+			}
+
+			if j != i {
+				fmt.Println(`int not match`, f, i)
+				return
+			}
+
 		}
-
-		j, err := mpp.GetInt(v)
-		if err != nil {
-			fmt.Println(`error when load int`, i, err)
-			return
-		}
-
-		if j != i {
-			fmt.Println(`int not match`, i)
-			return
-		}
-
 	}
 
 	fmt.Println(`all int test pass`)

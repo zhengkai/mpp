@@ -5,6 +5,7 @@ import (
 )
 
 func Debug(s []byte) {
+
 	for _, b := range s {
 
 		s := ` `

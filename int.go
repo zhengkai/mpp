@@ -12,17 +12,23 @@ func GetInt(v []byte) (i int64, err error) {
 	switch f {
 
 	case FormatFixInt:
+
 		i = int64(v[0] & 0x7f)
 
+	case FormatNegativeFixInt:
+
+		i = int64(int8(v[0]))
+
 	case FormatInt8:
+
 		i = int64(int8(v[1]))
 
 	case FormatInt16:
 
-		var i32 int32
-		buf := bytes.NewBuffer([]byte{0, 0, v[1], v[2]})
-		binary.Read(buf, binary.BigEndian, &i32)
-		i = int64(i32)
+		var i16 int16
+		buf := bytes.NewBuffer(v[1:3])
+		binary.Read(buf, binary.BigEndian, &i16)
+		i = int64(i16)
 
 	case FormatInt32:
 
@@ -37,18 +43,23 @@ func GetInt(v []byte) (i int64, err error) {
 		binary.Read(buf, binary.BigEndian, &i)
 
 	case FormatUint8:
+
 		i = int64(uint8(v[1]))
 
 	case FormatUint16:
+
 		i = int64(binary.BigEndian.Uint16(v[1:3]))
 
 	case FormatUint32:
+
 		i = int64(binary.BigEndian.Uint32(v[1:5]))
 
 	case FormatUint64:
+
 		i = int64(binary.BigEndian.Uint64(v[1:9]))
 
 	default:
+
 		err = NotIntegerError
 
 		panic(`unknown type ` + f.String() + ` ` + f.Type().String())
