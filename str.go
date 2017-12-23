@@ -47,9 +47,7 @@ func getBin(v []byte) (r []byte, end int64, t Type, err error) {
 		return
 	}
 
-	count, _ := getCount(f, v)
-
-	metaLen := f.MetaLen()
+	count, metaLen, _ := getCount(f, v)
 
 	end = metaLen + count
 

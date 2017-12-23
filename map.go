@@ -4,13 +4,13 @@ func MapEach(in []byte, cb func(i int64, k []byte, kt Type, v []byte, vt Type) (
 
 	f := GetFormat(in[0])
 
-	count, pErr := getCount(f, in)
+	count, metaLen, pErr := getCount(f, in)
 
 	if pErr != nil || f.Type() != Map {
 		return NotMapError
 	}
 
-	in = in[f.MetaLen():]
+	in = in[metaLen:]
 
 	var i int64
 

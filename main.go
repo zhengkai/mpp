@@ -22,12 +22,12 @@ func Get(v []byte, key ...string) (r []byte, t Type, err error) {
 
 	case Map:
 
-		var i int64
-		v = v[f.MetaLen():]
+		count, metaLen, _ := getCount(f, v)
+		v = v[metaLen:]
 
 		findKey, key = key[0], key[1:]
 
-		count, _ := getCount(f, v)
+		var i int64
 
 		for {
 			if i > count {
@@ -75,9 +75,9 @@ func Get(v []byte, key ...string) (r []byte, t Type, err error) {
 		}
 		i = int64(tI)
 
-		count, _ := getCount(f, v)
+		count, metaLen, _ := getCount(f, v)
 
-		v = v[f.MetaLen():]
+		v = v[metaLen:]
 
 		if i > count {
 			err = KeyPathNotFoundError

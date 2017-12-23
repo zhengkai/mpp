@@ -4,13 +4,13 @@ func ArrayEach(in []byte, cb func(i int64, v []byte, t Type) (isContinue bool)) 
 
 	f := GetFormat(in[0])
 
-	count, pErr := getCount(f, in)
+	count, metaLen, pErr := getCount(f, in)
 
 	if pErr != nil || f.Type() != Array {
 		return NotArrayError
 	}
 
-	in = in[f.MetaLen():]
+	in = in[metaLen:]
 
 	var i int64
 
