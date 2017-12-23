@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	NotExist = Type(iota)
+	Unknown = Type(iota)
 	Str
 	Bin
 	Ext
@@ -15,7 +15,6 @@ const (
 	Array
 	Bool
 	Nil
-	Unknown
 )
 
 var (
@@ -34,23 +33,34 @@ var (
 	CanNotCountError     = errors.New("this format can not be count")
 	FormatError          = errors.New("Unknown Format")
 
-	TypeName = map[Type]string{
-		Ext:     `Ext`,
-		Str:     `Str`,
-		Bin:     `Bin`,
-		Int:     `Int`,
-		Float:   `Float`,
-		Map:     `Map`,
-		Array:   `Array`,
-		Bool:    `Bool`,
-		Nil:     `Nil`,
-		Unknown: `Unknown`,
-	}
+	TypeName = map[Type]string{}
 )
 
 type Type uint8
 type ExtType int8
 
-func (t Type) String() string {
-	return TypeName[t]
+func (t Type) String() (s string) {
+	switch t {
+	case Ext:
+		s = `Ext`
+	case Str:
+		s = `Str`
+	case Bin:
+		s = `Bin`
+	case Int:
+		s = `Int`
+	case Float:
+		s = `Float`
+	case Map:
+		s = `Map`
+	case Array:
+		s = `Array`
+	case Bool:
+		s = `Bool`
+	case Nil:
+		s = `Nil`
+	case Unknown:
+		s = `Unknown`
+	}
+	return
 }

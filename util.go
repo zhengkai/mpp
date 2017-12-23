@@ -37,7 +37,7 @@ func GetByteLen(v []byte) (byteLen int64) {
 	case Int,
 		Float:
 
-		byteLen = f.MetaLen()
+		byteLen = f.metaLen()
 
 	case Bool,
 		Nil:

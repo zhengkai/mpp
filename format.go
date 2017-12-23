@@ -41,57 +41,91 @@ const (
 	FormatMap32    = Format(0xdf)
 )
 
-var (
-	FormatName = map[Format]string{
-		FormatFixInt:         `FixInt`,
-		FormatFixMap:         `FixMap`,
-		FormatFixArray:       `FixArray`,
-		FormatFixStr:         `FixStr`,
-		FormatNegativeFixInt: `NegativeFixInt`,
-		FormatNil:            `Nil`,
-		FormatNa:             `Na`,
-		FormatFalse:          `False`,
-		FormatTrue:           `True`,
-		FormatBin8:           `Bin8`,
-		FormatBin16:          `Bin16`,
-		FormatBin32:          `Bin32`,
-		FormatExt8:           `Ext8`,
-		FormatExt16:          `Ext16`,
-		FormatExt32:          `Ext32`,
-		FormatFloat32:        `Float32`,
-		FormatFloat64:        `Float64`,
-		FormatUint8:          `Uint8`,
-		FormatUint16:         `Uint16`,
-		FormatUint32:         `Uint32`,
-		FormatUint64:         `Uint64`,
-		FormatInt8:           `Int8`,
-		FormatInt16:          `Int16`,
-		FormatInt32:          `Int32`,
-		FormatInt64:          `Int64`,
-		FormatFixExt1:        `FixExt1`,
-		FormatFixExt2:        `FixExt2`,
-		FormatFixExt4:        `FixExt4`,
-		FormatFixExt8:        `FixExt8`,
-		FormatFixExt16:       `FixExt16`,
-		FormatStr8:           `Str8`,
-		FormatStr16:          `Str16`,
-		FormatStr32:          `Str32`,
-		FormatArray16:        `Array16`,
-		FormatArray32:        `Array32`,
-		FormatMap16:          `Map16`,
-		FormatMap32:          `Map32`,
-	}
-)
-
 type Format uint8
 
-func (f Format) String() string {
-	return FormatName[f]
+func (f Format) String() (s string) {
+	switch f {
+	case FormatFixInt:
+		s = `FixInt`
+	case FormatFixMap:
+		s = `FixMap`
+	case FormatFixArray:
+		s = `FixArray`
+	case FormatFixStr:
+		s = `FixStr`
+	case FormatNegativeFixInt:
+		s = `NegativeFixInt`
+	case FormatNil:
+		s = `Nil`
+	case FormatNa:
+		s = `Na`
+	case FormatFalse:
+		s = `False`
+	case FormatTrue:
+		s = `True`
+	case FormatBin8:
+		s = `Bin8`
+	case FormatBin16:
+		s = `Bin16`
+	case FormatBin32:
+		s = `Bin32`
+	case FormatExt8:
+		s = `Ext8`
+	case FormatExt16:
+		s = `Ext16`
+	case FormatExt32:
+		s = `Ext32`
+	case FormatFloat32:
+		s = `Float32`
+	case FormatFloat64:
+		s = `Float64`
+	case FormatUint8:
+		s = `Uint8`
+	case FormatUint16:
+		s = `Uint16`
+	case FormatUint32:
+		s = `Uint32`
+	case FormatUint64:
+		s = `Uint64`
+	case FormatInt8:
+		s = `Int8`
+	case FormatInt16:
+		s = `Int16`
+	case FormatInt32:
+		s = `Int32`
+	case FormatInt64:
+		s = `Int64`
+	case FormatFixExt1:
+		s = `FixExt1`
+	case FormatFixExt2:
+		s = `FixExt2`
+	case FormatFixExt4:
+		s = `FixExt4`
+	case FormatFixExt8:
+		s = `FixExt8`
+	case FormatFixExt16:
+		s = `FixExt16`
+	case FormatStr8:
+		s = `Str8`
+	case FormatStr16:
+		s = `Str16`
+	case FormatStr32:
+		s = `Str32`
+	case FormatArray16:
+		s = `Array16`
+	case FormatArray32:
+		s = `Array32`
+	case FormatMap16:
+		s = `Map16`
+	case FormatMap32:
+		s = `Map32`
+	default:
+		s = `Unknown`
+	}
+	return
 }
 
 func (f Format) Type() (t Type) {
-
-	t = Unknown
 
 	switch f {
 
@@ -146,6 +180,10 @@ func (f Format) Type() (t Type) {
 	case FormatNil:
 
 		t = Nil
+
+	default:
+
+		t = Unknown
 	}
 
 	return
@@ -176,7 +214,7 @@ func GetFormat(v byte) Format {
 	return Format(v)
 }
 
-func (f Format) MetaLen() (len int64) {
+func (f Format) metaLen() (len int64) {
 
 	switch f {
 
