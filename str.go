@@ -1,5 +1,14 @@
 package mpp
 
+import (
+	"errors"
+	"unicode/utf8"
+)
+
+var (
+	InvalidUtf8Error = errors.New(`invalid utf8`)
+)
+
 func GetStr(v []byte) (s string, err error) {
 
 	var r []byte
@@ -11,6 +20,11 @@ func GetStr(v []byte) (s string, err error) {
 	}
 
 	if err != nil {
+		return
+	}
+
+	if !utf8.Valid(r) {
+		err = InvalidUtf8Error
 		return
 	}
 
