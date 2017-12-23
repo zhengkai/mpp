@@ -5,8 +5,8 @@ func GetStr(v []byte) (s string, err error) {
 	var r []byte
 	var t Type
 	r, _, t, err = getBin(v)
-	if t != String {
-		err = NotStringError
+	if t != Str {
+		err = NotStrError
 		return
 	}
 
@@ -42,8 +42,8 @@ func getBin(v []byte) (r []byte, end int64, t Type, err error) {
 
 	f := GetFormat(v[0])
 	t = f.Type()
-	if t != String && t != Binary {
-		err = NotBinaryError
+	if t != Str && t != Bin {
+		err = NotBinError
 		return
 	}
 

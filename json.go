@@ -28,13 +28,13 @@ func ToJson(v []byte) *bytes.Buffer {
 
 		toJsonMap(v, buf)
 
-	case String:
+	case Str:
 
 		s, _ := GetStr(v)
 		j, _ := json.Marshal(s)
 		buf.Write(j)
 
-	case Integer:
+	case Int:
 
 		num, _ := GetInt(v)
 		j, _ := json.Marshal(num)
@@ -46,7 +46,7 @@ func ToJson(v []byte) *bytes.Buffer {
 		j, _ := json.Marshal(num)
 		buf.Write(j)
 
-	case Boolean:
+	case Bool:
 
 		b, _ := GetBool(v)
 		j, _ := json.Marshal(b)
@@ -68,14 +68,14 @@ func toJsonStr(v []byte, buf *bytes.Buffer, t Type) {
 
 	switch t {
 
-	case String,
-		Integer,
-		Boolean,
+	case Str,
+		Int,
+		Bool,
 		Nil:
 
 		nb := ToJson(v)
 
-		if t == String {
+		if t == Str {
 
 			nb.WriteTo(buf)
 

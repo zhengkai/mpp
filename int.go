@@ -60,7 +60,7 @@ func GetInt(v []byte) (i int64, err error) {
 
 	default:
 
-		err = NotIntegerError
+		err = NotIntError
 
 		panic(`unknown type ` + f.String() + ` ` + f.Type().String())
 	}

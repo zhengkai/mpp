@@ -16,7 +16,7 @@ func GetBool(v []byte) (b bool, err error) {
 
 	default:
 
-		err = NotIntegerError
+		err = NotBoolError
 
 		panic(`unknown type ` + f.String() + ` ` + f.Type().String())
 	}

@@ -7,14 +7,14 @@ import (
 
 const (
 	NotExist = Type(iota)
-	String
-	Binary
+	Str
+	Bin
 	Ext
-	Integer
+	Int
 	Float
 	Map
 	Array
-	Boolean
+	Bool
 	Nil
 	Unknown
 
@@ -61,10 +61,11 @@ const (
 var (
 	KeyPathNotFoundError = errors.New("Key path not found")
 	WrongFormatError     = errors.New("Wrong format")
-	NotStringError       = errors.New("Not a string")
-	NotBinaryError       = errors.New("Not a binary")
-	NotIntegerError      = errors.New("Not a integer")
+	NotStrError          = errors.New("Not a string")
+	NotBinError          = errors.New("Not a binary")
+	NotIntError          = errors.New("Not a integer")
 	NotFloatError        = errors.New("Not a float")
+	NotBoolError         = errors.New("Not a boolean")
 	NotArrayError        = errors.New("Not a array")
 	NotMapError          = errors.New("Not a map")
 	NotFixedDataError    = errors.New("Not a fixed data")
@@ -75,13 +76,13 @@ var (
 
 	TypeName = map[Type]string{
 		Ext:     `Ext`,
-		String:  `String`,
-		Binary:  `Binary`,
-		Integer: `Integer`,
+		Str:     `Str`,
+		Bin:     `Bin`,
+		Int:     `Int`,
 		Float:   `Float`,
 		Map:     `Map`,
 		Array:   `Array`,
-		Boolean: `Boolean`,
+		Bool:    `Bool`,
 		Nil:     `Nil`,
 		Unknown: `Unknown`,
 	}
@@ -150,13 +151,13 @@ func (f Format) Type() (t Type) {
 		FormatStr16,
 		FormatStr32:
 
-		t = String
+		t = Str
 
 	case FormatBin8,
 		FormatBin16,
 		FormatBin32:
 
-		t = Binary
+		t = Bin
 
 	case FormatFixInt,
 		FormatNegativeFixInt,
@@ -169,7 +170,7 @@ func (f Format) Type() (t Type) {
 		FormatUint32,
 		FormatUint64:
 
-		t = Integer
+		t = Int
 
 	case FormatFloat32,
 		FormatFloat64:
@@ -191,7 +192,7 @@ func (f Format) Type() (t Type) {
 	case FormatTrue,
 		FormatFalse:
 
-		t = Boolean
+		t = Bool
 
 	case FormatNil:
 
@@ -211,18 +212,18 @@ func getByteLen(v []byte) (byteLen int64) {
 
 	switch f.Type() {
 
-	case Integer,
+	case Int,
 		Float:
 
 		byteLen = f.MetaLen()
 
-	case Boolean,
+	case Bool,
 		Nil:
 
 		byteLen = 1
 
-	case String,
-		Binary,
+	case Str,
+		Bin,
 		Ext:
 
 		count, metaLen, _ := getCount(f, v)
