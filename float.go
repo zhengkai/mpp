@@ -5,7 +5,14 @@ import (
 	"math"
 )
 
-func GetFloat(v []byte) (f float64, err error) {
+func GetFloat(v []byte, key ...string) (f float64, err error) {
+
+	if len(key) > 0 {
+		v, _, err = Get(v, key...)
+		if err != nil {
+			return
+		}
+	}
 
 	format := GetFormat(v[0])
 

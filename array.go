@@ -1,6 +1,13 @@
 package mpp
 
-func ArrayEach(in []byte, cb func(i int64, v []byte, t Type) (isContinue bool)) (err error) {
+func ArrayEach(in []byte, cb func(i int64, v []byte, t Type) (isContinue bool), key ...string) (err error) {
+
+	if len(key) > 0 {
+		in, _, err = Get(in, key...)
+		if err != nil {
+			return
+		}
+	}
 
 	f := GetFormat(in[0])
 

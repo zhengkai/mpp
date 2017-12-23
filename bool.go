@@ -1,6 +1,13 @@
 package mpp
 
-func GetBool(v []byte) (b bool, err error) {
+func GetBool(v []byte, key ...string) (b bool, err error) {
+
+	if len(key) > 0 {
+		v, _, err = Get(v, key...)
+		if err != nil {
+			return
+		}
+	}
 
 	f := GetFormat(v[0])
 

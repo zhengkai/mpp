@@ -9,7 +9,14 @@ var (
 	InvalidUtf8Error = errors.New(`invalid utf8`)
 )
 
-func GetStr(v []byte) (s string, err error) {
+func GetStr(v []byte, key ...string) (s string, err error) {
+
+	if len(key) > 0 {
+		v, _, err = Get(v, key...)
+		if err != nil {
+			return
+		}
+	}
 
 	var r []byte
 	var t Type
@@ -32,7 +39,14 @@ func GetStr(v []byte) (s string, err error) {
 	return
 }
 
-func GetBin(v []byte) (r []byte, err error) {
+func GetBin(v []byte, key ...string) (r []byte, err error) {
+
+	if len(key) > 0 {
+		v, _, err = Get(v, key...)
+		if err != nil {
+			return
+		}
+	}
 
 	var tmp []byte
 	tmp, _, _, err = getBin(v)
@@ -45,7 +59,14 @@ func GetBin(v []byte) (r []byte, err error) {
 	return
 }
 
-func GetUnsafeBin(v []byte) (r []byte, err error) {
+func GetUnsafeBin(v []byte, key ...string) (r []byte, err error) {
+
+	if len(key) > 0 {
+		v, _, err = Get(v, key...)
+		if err != nil {
+			return
+		}
+	}
 
 	r, _, _, err = getBin(v)
 
