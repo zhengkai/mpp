@@ -26,7 +26,7 @@ func ArrayEach(in []byte, cb func(i int64, v []byte, t Type) (isContinue bool)) 
 			break
 		}
 
-		in = in[getByteLen(in):]
+		in = in[GetByteLen(in):]
 	}
 
 	return

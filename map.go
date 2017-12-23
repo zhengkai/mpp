@@ -20,7 +20,7 @@ func MapEach(in []byte, cb func(i int64, k []byte, kt Type, v []byte, vt Type) (
 
 		kt := GetFormat(k[0]).Type()
 
-		in = in[getByteLen(in):]
+		in = in[GetByteLen(in):]
 
 		vt := GetFormat(in[0]).Type()
 
@@ -34,7 +34,7 @@ func MapEach(in []byte, cb func(i int64, k []byte, kt Type, v []byte, vt Type) (
 			break
 		}
 
-		in = in[getByteLen(in):]
+		in = in[GetByteLen(in):]
 	}
 
 	return
