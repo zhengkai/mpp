@@ -42,12 +42,13 @@ func Get(v []byte, key ...string) (r []byte, t Type, err error) {
 
 			var subErr error
 
-			k, end, subErr := getStr(v, false)
-
+			kv, end, _, subErr := getBin(v)
 			if subErr != nil {
 				err = WrongFormatError
 				return
 			}
+
+			k := string(kv)
 
 			v = v[end:]
 

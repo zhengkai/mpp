@@ -1,40 +1,59 @@
 package mpp
 
-import "bytes"
-
 func GetStr(v []byte) (s string, err error) {
-	s, _, err = getStr(v, false)
-	return
-}
 
-func getSlashedStr(v []byte) (s string, err error) {
-	s, _, err = getStr(v, true)
-	return
-}
-
-func getStr(v []byte, isSlash bool) (s string, end int64, err error) {
-
-	f := GetFormat(v[0])
-
-	count, pErr := getCount(f, v)
-
-	if pErr != nil || f.Type() != String {
+	var r []byte
+	var t Type
+	r, _, t, err = getBin(v)
+	if t != String {
 		err = NotStringError
 		return
 	}
+
+	if err != nil {
+		return
+	}
+
+	s = string(r)
+	return
+}
+
+func GetBin(v []byte) (r []byte, err error) {
+
+	var tmp []byte
+	tmp, _, _, err = getBin(v)
+
+	if err != nil {
+		return
+	}
+
+	copy(tmp, v)
+	return
+}
+
+func GetUnsafeBin(v []byte) (r []byte, err error) {
+
+	r, _, _, err = getBin(v)
+
+	return
+}
+
+func getBin(v []byte) (r []byte, end int64, t Type, err error) {
+
+	f := GetFormat(v[0])
+	t = f.Type()
+	if t != String && t != Binary {
+		err = NotBinaryError
+		return
+	}
+
+	count, _ := getCount(f, v)
 
 	metaLen := f.MetaLen()
 
 	end = metaLen + count
 
-	v = v[metaLen:end]
-
-	if isSlash {
-		v = bytes.Replace(v, []byte{'\\'}, []byte{'\\', '\\'}, -1)
-		v = bytes.Replace(v, []byte{'"'}, []byte{'\\', '"'}, -1)
-	}
-
-	s = string(v)
+	r = v[metaLen:end]
 
 	return
 }

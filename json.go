@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"strconv"
 )
 
 func ToJson(v []byte) *bytes.Buffer {
@@ -31,10 +30,9 @@ func ToJson(v []byte) *bytes.Buffer {
 
 	case String:
 
-		buf.WriteByte('"')
-		s, _ := getSlashedStr(v)
-		buf.WriteString(s)
-		buf.WriteByte('"')
+		s, _ := GetStr(v)
+		j, _ := json.Marshal(s)
+		buf.Write(j)
 
 	case Integer:
 
@@ -69,35 +67,24 @@ func ToJson(v []byte) *bytes.Buffer {
 func toJsonStr(v []byte, buf *bytes.Buffer, t Type) {
 
 	switch t {
-	case String:
-		buf.WriteByte('"')
-		s, _ := getSlashedStr(v)
-		buf.WriteString(s)
-		buf.WriteByte('"')
 
-	case Integer:
-
-		num, _ := GetInt(v)
-
-		buf.WriteRune('"')
-		buf.WriteString(strconv.FormatInt(num, 10))
-		buf.WriteRune('"')
-
-	case Boolean,
+	case String,
+		Integer,
+		Boolean,
 		Nil:
 
-		s := ``
-		switch Format(v[0]) {
-		case FormatFalse:
-			s = `false`
-		case FormatTrue:
-			s = `true`
-		case FormatNil:
-			s = `null`
+		nb := ToJson(v)
+
+		if t == String {
+
+			nb.WriteTo(buf)
+
+		} else {
+
+			buf.WriteByte('"')
+			nb.WriteTo(buf)
+			buf.WriteByte('"')
 		}
-		buf.WriteRune('"')
-		buf.WriteString(s)
-		buf.WriteRune('"')
 
 	default:
 		buf.WriteString(`"unknown"`)

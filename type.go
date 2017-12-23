@@ -62,6 +62,7 @@ var (
 	KeyPathNotFoundError = errors.New("Key path not found")
 	WrongFormatError     = errors.New("Wrong format")
 	NotStringError       = errors.New("Not a string")
+	NotBinaryError       = errors.New("Not a binary")
 	NotIntegerError      = errors.New("Not a integer")
 	NotFloatError        = errors.New("Not a float")
 	NotArrayError        = errors.New("Not a array")
