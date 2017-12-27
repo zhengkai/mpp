@@ -32,8 +32,6 @@ func TestGetFloat64(t *testing.T) {
 			t.Errorf(`test float64 %v fail`, f)
 		}
 	}
-
-	t.Logf(`test float64 done`)
 }
 
 func TestGetFloat32(t *testing.T) {
@@ -60,6 +58,4 @@ func TestGetFloat32(t *testing.T) {
 			t.Errorf(`test float32 %v fail`, f)
 		}
 	}
-
-	t.Logf(`test float32 done`)
 }

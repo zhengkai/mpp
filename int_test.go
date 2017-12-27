@@ -64,8 +64,6 @@ func TestGetIntSolo(t *testing.T) {
 			t.Errorf(`test int %d fail`, i)
 		}
 	}
-
-	t.Logf(`test solo int all done, %d samples`, len(intBound))
 }
 
 func TestGetIntError(t *testing.T) {
