@@ -7,11 +7,9 @@ import (
 
 func GetInt(v []byte, key ...string) (i int64, err error) {
 
-	if len(key) > 0 {
-		v, _, err = Get(v, key...)
-		if err != nil {
-			return
-		}
+	v, err = byPath(v, key)
+	if err != nil {
+		return
 	}
 
 	f := GetFormat(v[0])

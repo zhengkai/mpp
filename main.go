@@ -4,6 +4,14 @@ import (
 	"strconv"
 )
 
+func byPath(b []byte, key []string) (r []byte, err error) {
+	if len(key) == 0 {
+		return b, nil
+	}
+	r, _, err = Get(b, key...)
+	return
+}
+
 func Get(v []byte, key ...string) (r []byte, t Type, err error) {
 
 	tier := len(key)
