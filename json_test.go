@@ -40,3 +40,23 @@ func TestToJson(t *testing.T) {
 		}
 	}
 }
+
+func Benchmark_ToJson(b *testing.B) {
+
+	b.StopTimer()
+
+	fileJson := fmt.Sprintf(`testdata/toJson/%d.json`, 8)
+	json, _ := ioutil.ReadFile(fileJson)
+	jsonStr := string(json)
+
+	fileMsgp := fmt.Sprintf(`testdata/toJson/%d.bin`, 8)
+	v, _ := ioutil.ReadFile(fileMsgp)
+
+	b.StartTimer()
+
+	for i := 0; i < 100; i++ {
+		if mpp.ToJson(v).String() != jsonStr {
+			b.Errorf(`ToJson fail when benchmark`)
+		}
+	}
+}
