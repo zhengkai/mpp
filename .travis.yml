@@ -1,8 +1,16 @@
 language: go
-
 go:
-  - 1.9
-  - master
-
+- 1.9
+- master
+install:
+- go get golang.org/x/tools/cmd/cover
+- go get github.com/mattn/goveralls
+- go get github.com/vmihailenco/msgpack
 script:
-  - go test -v -test.bench=".*" -test.benchmem .
+- go test -v -test.bench=".*" -test.benchmem -covermode=count -coverprofile=coverage.out
+  .
+- "$HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken
+  $COVERALLS_TOKEN"
+env:
+  global:
+    secure: jGIfe5o0Y43DT0YVAAgcj0o0uJEi1HutiYgSm6YJXrzzG+3SxUn+6Q/7ZeWqSJji36KKo6u9wyQ4N1WhsNL+6a+tmhurlkM3UxdBwGW+7Cff8mr81gom/TTtAJDZXLWPNLBh58XWzC30vlUyYaKF10jKBRPUSf0aqNwEcYJs8nUKQfY1S9ReVqckN3oq5eI3vJQVJrW/ZfrI/RFVXw7fFz+sPtlanUMHbZmJRX1CRPzmYeQzZaHfcAgY1mYJVJRDWGm8HhjIedFWel++/lhVwIV4Qil433XYM7zILqr2vpE3pEbb4C+Q4hSPiunaEDqY7FGt41NMdB7Z9LPPlV3Z/YhpYbo+OuluF6vNnqVhyQfLPSdKPnxwNhn4TxLOH/F2sMUmQYvPiV+xGd7+eVhKoggGJ30KzC+xOpi/rBcVR1y/WRzbq8/cLuia3Ss3pXl9c/ZQvYKwXw7ZpwHrj1GYqUclwGdd5wyxQvlojJGRzr3vrw3TNcrZWXwGpgDK3LUPsDbBDnLBRm9A5JFBMiuPzZ6tbIycs2IT9QVyg26T7DuOif0P7+fiWOQIUZyIaTO7vACBg3yZJl2+Rm9DfijSZGw7mhuevMSeffL6OR5TZUvq2LmhpQ8v8vnC45GCXND66HWMV5HkQHh1TM+Zq2Z9YzfZ1vKz+X3/Rag3RO/cHJ4=
