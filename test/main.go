@@ -4,8 +4,6 @@ package main
 
 func main() {
 
-	testStr()
-	testInt()
 	testArray()
 	testMap()
 	testFloat()

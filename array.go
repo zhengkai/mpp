@@ -1,33 +1,31 @@
 package mpp
 
 func ArrayEach(
-	in []byte,
+	b []byte,
 	cb func(i int64, v []byte, t Type) (isContinue bool),
 	key ...string,
 ) (err error) {
 
-	if len(key) > 0 {
-		in, _, err = Get(in, key...)
-		if err != nil {
-			return
-		}
+	b, err = byPath(b, key)
+	if err != nil {
+		return
 	}
 
-	f := GetFormat(in[0])
+	f := GetFormat(b[0])
 
-	count, metaLen, pErr := getCount(f, in)
+	count, metaLen, pErr := getCount(f, b)
 
 	if pErr != nil || f.Type() != Array {
-		return NotArrayError
+		return ErrNotArray
 	}
 
-	in = in[metaLen:]
+	b = b[metaLen:]
 
 	var i int64
 
 	for {
 
-		isContinue := cb(i, in, GetFormat(in[0]).Type())
+		isContinue := cb(i, b, GetFormat(b[0]).Type())
 		if !isContinue {
 			break
 		}
@@ -37,7 +35,7 @@ func ArrayEach(
 			break
 		}
 
-		in = in[GetByteLen(in):]
+		b = b[GetByteLen(b):]
 	}
 
 	return

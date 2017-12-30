@@ -48,7 +48,9 @@ func ExampleGetInt() {
 	// 123456
 }
 
-func TestGetIntSolo(t *testing.T) {
+func TestGetInt(t *testing.T) {
+
+	// solo
 
 	for _, i := range intBound {
 
@@ -64,9 +66,8 @@ func TestGetIntSolo(t *testing.T) {
 			t.Errorf(`test int %d fail`, i)
 		}
 	}
-}
 
-func TestGetIntError(t *testing.T) {
+	// err
 
 	b, _ := msgpack.Marshal(`not int`)
 	i, err := mpp.GetInt(b)
@@ -74,7 +75,17 @@ func TestGetIntError(t *testing.T) {
 	if i > 0 {
 		t.Error(`int not zero when err`)
 	}
-	if err != mpp.NotIntError {
+	if err != mpp.ErrNotInt {
 		t.Error(`not throw NotIntError`)
+	}
+
+	// path
+
+	b, _ = msgpack.Marshal(2017)
+
+	i, err = mpp.GetInt(b, `0`)
+
+	if i != 0 || err != mpp.ErrKeyPathNotFound {
+		t.Error(`path not found`)
 	}
 }

@@ -182,6 +182,17 @@ func (f Format) Type() (t Type) {
 
 		t = Nil
 
+	case FormatExt8,
+		FormatExt16,
+		FormatExt32,
+		FormatFixExt1,
+		FormatFixExt2,
+		FormatFixExt4,
+		FormatFixExt8,
+		FormatFixExt16:
+
+		t = Ext
+
 	default:
 
 		t = Unknown

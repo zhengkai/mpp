@@ -54,9 +54,11 @@ func Benchmark_ToJson(b *testing.B) {
 
 	b.StartTimer()
 
-	for i := 0; i < 100; i++ {
-		if mpp.ToJson(v).String() != jsonStr {
-			b.Errorf(`ToJson fail when benchmark`)
-		}
+	if len(v) < 1 {
+		b.Errorf(`ToJson output empty`)
+	}
+
+	if mpp.ToJson(v).String() != jsonStr {
+		b.Errorf(`ToJson fail when benchmark`)
 	}
 }

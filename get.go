@@ -38,21 +38,23 @@ func Get(v []byte, key ...string) (r []byte, t Type, err error) {
 		var i int64
 
 		for {
-			if i > count {
-				err = KeyPathNotFoundError
-				break
+
+			if i >= count {
+				err = ErrKeyPathNotFound
+				return
 			}
 			i++
 
 			if len(v) == 0 {
-				err = WrongFormatError
+				err = ErrInvalid
+				return
 			}
 
 			var subErr error
 
 			kv, end, _, subErr := getBin(v)
 			if subErr != nil {
-				err = WrongFormatError
+				err = ErrInvalid
 				return
 			}
 
@@ -66,7 +68,8 @@ func Get(v []byte, key ...string) (r []byte, t Type, err error) {
 
 			v, subErr = skip(v, 1)
 			if subErr != nil {
-				err = WrongFormatError
+				err = ErrInvalid
+				return
 			}
 		}
 
@@ -77,8 +80,8 @@ func Get(v []byte, key ...string) (r []byte, t Type, err error) {
 		var i int64
 		var tI int
 		tI, err = strconv.Atoi(findKey)
-		if err != nil {
-			err = KeyPathNotFoundError
+		if err != nil || tI < 0 {
+			err = ErrKeyPathNotFound
 			return
 		}
 		i = int64(tI)
@@ -87,8 +90,8 @@ func Get(v []byte, key ...string) (r []byte, t Type, err error) {
 
 		v = v[metaLen:]
 
-		if i > count {
-			err = KeyPathNotFoundError
+		if i >= count {
+			err = ErrKeyPathNotFound
 			return
 		}
 
@@ -96,16 +99,16 @@ func Get(v []byte, key ...string) (r []byte, t Type, err error) {
 		v, subErr = skip(v, i)
 
 		if subErr != nil {
-			err = WrongFormatError
+			err = ErrInvalid
 			return
 		}
 
 		return Get(v, key...)
 
 	default:
-		err = KeyPathNotFoundError
+
+		err = ErrKeyPathNotFound
 	}
 
-	r = v
 	return
 }

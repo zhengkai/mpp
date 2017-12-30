@@ -17,7 +17,9 @@ var (
 	}
 )
 
-func TestGetFloat64(t *testing.T) {
+func TestGetFloat(t *testing.T) {
+
+	// float64
 
 	for _, f := range floatBound {
 
@@ -32,9 +34,8 @@ func TestGetFloat64(t *testing.T) {
 			t.Errorf(`test float64 %v fail`, f)
 		}
 	}
-}
 
-func TestGetFloat32(t *testing.T) {
+	// float32
 
 	for _, f64 := range floatBound {
 
@@ -57,5 +58,28 @@ func TestGetFloat32(t *testing.T) {
 		if tf != f {
 			t.Errorf(`test float32 %v fail`, f)
 		}
+	}
+
+	// path
+
+	b, _ := msgpack.Marshal([...]float32{1.1, 3.14, 0.618})
+
+	f, err := mpp.GetFloat(b, `2`)
+	if float32(f) != 0.618 || err != nil {
+		t.Error(`fail with path`)
+	}
+
+	// error
+
+	var zero float64
+
+	f, err = mpp.GetFloat(b, `3`)
+	if f != zero || err != mpp.ErrKeyPathNotFound {
+		t.Error(`fail with wrong path`)
+	}
+
+	f, err = mpp.GetFloat(b)
+	if f != zero || err != mpp.ErrNotFloat {
+		t.Error(`fail with not float`)
 	}
 }

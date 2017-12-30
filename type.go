@@ -18,22 +18,23 @@ const (
 )
 
 var (
-	KeyPathNotFoundError = errors.New("Key path not found")
-	WrongFormatError     = errors.New("Wrong format")
-	NotStrError          = errors.New("Not a string")
-	NotBinError          = errors.New("Not a binary")
-	NotIntError          = errors.New("Not a integer")
-	NotFloatError        = errors.New("Not a float")
-	NotBoolError         = errors.New("Not a boolean")
-	NotArrayError        = errors.New("Not a array")
-	NotMapError          = errors.New("Not a map")
-	NotFixedDataError    = errors.New("Not a fixed data")
-	IncompleteError      = errors.New("Not complete yet")
-	IllegalMapKeyError   = errors.New("Iillegal map key")
-	CanNotCountError     = errors.New("this format can not be count")
-	FormatError          = errors.New("Unknown Format")
+	ErrInvalid         = errors.New("Invalid or malformed data")
+	ErrKeyPathNotFound = errors.New("Key path not found")
+	ErrMalformedUtf8   = errors.New("Malformed UTF-8 characters, possibly incorrectly encoded")
+	ErrNotArray        = errors.New("Not an array")
+	ErrNotBin          = errors.New("Not a binary")
+	ErrNotBool         = errors.New("Not a boolean")
+	ErrNotFloat        = errors.New("Not a float")
+	ErrNotInt          = errors.New("Not a integer")
+	ErrNotMap          = errors.New("Not a map")
+	ErrNotStr          = errors.New("Not a string")
 
-	TypeName = map[Type]string{}
+	NotMapError        = errors.New("Not a map")
+	NotFixedDataError  = errors.New("Not a fixed data")
+	IncompleteError    = errors.New("Not complete yet")
+	IllegalMapKeyError = errors.New("Iillegal map key")
+	CanNotCountError   = errors.New("this format can not be count")
+	FormatError        = errors.New("Unknown Format")
 )
 
 type Type uint8
@@ -59,7 +60,7 @@ func (t Type) String() (s string) {
 		s = `Bool`
 	case Nil:
 		s = `Nil`
-	case Unknown:
+	default:
 		s = `Unknown`
 	}
 	return

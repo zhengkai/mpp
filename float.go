@@ -28,7 +28,7 @@ func GetFloat(v []byte, key ...string) (f float64, err error) {
 
 	default:
 
-		err = NotFloatError
+		err = ErrNotFloat
 	}
 
 	return
