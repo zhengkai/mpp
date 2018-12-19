@@ -28,16 +28,14 @@ var (
 	ErrNotInt          = errors.New("Not a integer")
 	ErrNotMap          = errors.New("Not a map")
 	ErrNotStr          = errors.New("Not a string")
-
-	NotMapError        = errors.New("Not a map")
-	NotFixedDataError  = errors.New("Not a fixed data")
-	IncompleteError    = errors.New("Not complete yet")
-	IllegalMapKeyError = errors.New("Iillegal map key")
-	CanNotCountError   = errors.New("this format can not be count")
-	FormatError        = errors.New("Unknown Format")
+	ErrIncomplete      = errors.New("Not complete yet")
+	ErrCanNotCount     = errors.New("this format can not be count")
 )
 
+// Type https://github.com/msgpack/msgpack/blob/master/spec.md#type-system
 type Type uint8
+
+// ExtType https://github.com/msgpack/msgpack/blob/master/spec.md#extension-types
 type ExtType int8
 
 func (t Type) String() (s string) {

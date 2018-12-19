@@ -19,7 +19,7 @@ func skip(v []byte, j int64) ([]byte, error) {
 		dataLen := GetByteLen(v)
 
 		if dataLen < 1 {
-			return nil, IncompleteError
+			return nil, ErrIncomplete
 		}
 
 		v = v[dataLen:]
@@ -123,7 +123,7 @@ func getCount(f Format, v []byte) (count int64, metaLen int64, err error) {
 
 	default:
 
-		err = CanNotCountError
+		err = ErrCanNotCount
 	}
 
 	return

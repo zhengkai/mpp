@@ -42,6 +42,7 @@ const (
 	FormatMap32    = Format(0xdf)
 )
 
+// Format https://github.com/msgpack/msgpack/blob/master/spec.md#formats
 type Format uint8
 
 func (f Format) String() (s string) {
