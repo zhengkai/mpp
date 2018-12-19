@@ -21,7 +21,7 @@ func TestMapEach(t *testing.T) {
 	var s string
 	mpp.MapEach(
 		b,
-		func(i int64, k []byte, kt mpp.Type, v []byte, vt mpp.Type) bool {
+		func(i int, k []byte, kt mpp.Type, v []byte, vt mpp.Type) bool {
 
 			if vt == mpp.Str {
 				s, _ = mpp.GetStr(v)
@@ -41,7 +41,7 @@ func TestMapEach(t *testing.T) {
 
 	err = mpp.MapEach(
 		b,
-		func(i int64, k []byte, kt mpp.Type, v []byte, vt mpp.Type) bool {
+		func(i int, k []byte, kt mpp.Type, v []byte, vt mpp.Type) bool {
 
 			if vt == mpp.Str {
 				s, _ = mpp.GetStr(v)
@@ -59,7 +59,7 @@ func TestMapEach(t *testing.T) {
 
 	err = mpp.MapEach(
 		b,
-		func(i int64, k []byte, kt mpp.Type, v []byte, vt mpp.Type) bool {
+		func(i int, k []byte, kt mpp.Type, v []byte, vt mpp.Type) bool {
 
 			if vt == mpp.Str {
 				s, _ = mpp.GetStr(v)

@@ -1,5 +1,6 @@
 package mpp
 
+// GetBool by path key
 func GetBool(v []byte, key ...string) (b bool, err error) {
 
 	v, err = byPath(v, key)

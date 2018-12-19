@@ -65,6 +65,15 @@ func TestGetInt(t *testing.T) {
 		if ti != i {
 			t.Errorf(`test int %d fail`, i)
 		}
+
+		// bound check
+		k := len(b)
+		for j := 0; j < k; j++ {
+			_, err := mpp.GetInt(b[:j])
+			if err != mpp.ErrInvalid {
+				t.Error(`no error when data broken`)
+			}
+		}
 	}
 
 	// err

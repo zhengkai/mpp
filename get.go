@@ -5,6 +5,12 @@ import (
 )
 
 func byPath(b []byte, key []string) (r []byte, err error) {
+
+	if len(b) == 0 {
+		err = ErrInvalid
+		return
+	}
+
 	if len(key) == 0 {
 		return b, nil
 	}
@@ -12,8 +18,13 @@ func byPath(b []byte, key []string) (r []byte, err error) {
 	return
 }
 
-// Get value by key
+// Get value by path key
 func Get(v []byte, key ...string) (r []byte, t Type, err error) {
+
+	if len(v) == 0 {
+		err = ErrInvalid
+		return
+	}
 
 	tier := len(key)
 
@@ -51,19 +62,15 @@ func getMap(v []byte, key []string, f Format) (r []byte, t Type, err error) {
 	if err != nil {
 		return
 	}
+	if count == 0 {
+		err = ErrKeyPathNotFound
+		return
+	}
 	v = v[metaLen:]
 
 	findKey, key = key[0], key[1:]
 
-	var i int64
-
 	for {
-
-		if i >= count {
-			err = ErrKeyPathNotFound
-			return
-		}
-		i++
 
 		if len(v) == 0 {
 			err = ErrInvalid
@@ -80,14 +87,25 @@ func getMap(v []byte, key []string, f Format) (r []byte, t Type, err error) {
 
 		k := string(kv)
 
+		if len(v) < int(end+1) {
+			err = ErrInvalid
+			return
+		}
+
 		v = v[end:]
 
 		if k == findKey {
 			return Get(v, key...)
 		}
 
-		v, subErr = skip(v, 1)
-		if subErr != nil {
+		count--
+		if count == 0 {
+			err = ErrKeyPathNotFound
+			return
+		}
+
+		v, err = skip(v, 1)
+		if err != nil {
 			err = ErrInvalid
 			return
 		}
@@ -99,14 +117,12 @@ func getArray(v []byte, key []string, f Format) (r []byte, t Type, err error) {
 	var findKey string
 	findKey, key = key[0], key[1:]
 
-	var i int64
-	var tI int
-	tI, err = strconv.Atoi(findKey)
-	if err != nil || tI < 0 {
+	var i int
+	i, err = strconv.Atoi(findKey)
+	if err != nil || i < 0 {
 		err = ErrKeyPathNotFound
 		return
 	}
-	i = int64(tI)
 
 	count, metaLen, err := getCount(f, v)
 	if err != nil {

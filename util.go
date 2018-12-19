@@ -2,14 +2,9 @@ package mpp
 
 import "encoding/binary"
 
-func skip(v []byte, j int64) ([]byte, error) {
+func skip(v []byte, j int) ([]byte, error) {
 
-	if j < 1 {
-		return v, nil
-	}
-
-	var i int64
-
+	var i int
 	for {
 		i++
 		if i > j {
@@ -18,8 +13,8 @@ func skip(v []byte, j int64) ([]byte, error) {
 
 		dataLen := GetByteLen(v)
 
-		if dataLen < 1 {
-			return nil, ErrIncomplete
+		if dataLen < 1 || len(v) < int(dataLen+1) {
+			return nil, ErrInvalid
 		}
 
 		v = v[dataLen:]
@@ -28,7 +23,11 @@ func skip(v []byte, j int64) ([]byte, error) {
 	return v, nil
 }
 
-func GetByteLen(v []byte) (byteLen int64) {
+func GetByteLen(v []byte) (byteLen int) {
+
+	if len(v) == 0 {
+		return 0
+	}
 
 	f := GetFormat(v[0])
 	t := f.Type()
@@ -59,49 +58,59 @@ func GetByteLen(v []byte) (byteLen int64) {
 		if t == Map {
 			limit *= 2
 		}
-		var i int64
+		var i int
 		byteLen = metaLen
 		for {
 			i++
 			if i > limit {
 				break
 			}
+
+			if len(v) < byteLen {
+				return 0
+			}
+
 			byteLen += GetByteLen(v[byteLen:])
 		}
 
 	default:
 
-		panic(`unknown type ` + f.Type().String())
+		return 0
+		// panic(`unknown type ` + f.Type().String())
 	}
 
 	return
 }
 
-func getCount(f Format, v []byte) (count int64, metaLen int64, err error) {
+func getCount(f Format, v []byte) (count int, metaLen int, err error) {
 
 	switch f {
 
 	case FormatFixArray:
 
-		count = int64(v[0] & 0x0f)
 		metaLen = 1
+		count = int(v[0] & 0x0f)
 
 	case FormatFixMap:
 
-		count = int64(v[0] & 0x0f)
 		metaLen = 1
+		count = int(v[0] & 0x0f)
 
 	case FormatFixStr:
 
-		count = int64(v[0] & 0x1f)
 		metaLen = 1
+		count = int(v[0] & 0x1f)
 
 	case FormatStr8,
 		FormatBin8,
 		FormatExt8:
 
-		count = int64(uint8(v[1]))
 		metaLen = 2
+		if len(v) < metaLen {
+			err = ErrInvalid
+			return
+		}
+		count = int(uint8(v[1]))
 
 	case FormatStr16,
 		FormatBin16,
@@ -110,7 +119,11 @@ func getCount(f Format, v []byte) (count int64, metaLen int64, err error) {
 		FormatArray16:
 
 		metaLen = 3
-		count = int64(binary.BigEndian.Uint16(v[1:3]))
+		if len(v) < metaLen {
+			err = ErrInvalid
+			return
+		}
+		count = int(binary.BigEndian.Uint16(v[1:3]))
 
 	case FormatStr32,
 		FormatBin32,
@@ -119,7 +132,11 @@ func getCount(f Format, v []byte) (count int64, metaLen int64, err error) {
 		FormatArray32:
 
 		metaLen = 5
-		count = int64(binary.BigEndian.Uint32(v[1:5]))
+		if len(v) < metaLen {
+			err = ErrInvalid
+			return
+		}
+		count = int(binary.BigEndian.Uint32(v[1:5]))
 
 	default:
 

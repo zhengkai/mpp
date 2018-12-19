@@ -4,6 +4,7 @@ import (
 	"unicode/utf8"
 )
 
+// GetStr by path key
 func GetStr(v []byte, key ...string) (s string, err error) {
 
 	v, err = byPath(v, key)
@@ -28,6 +29,7 @@ func GetStr(v []byte, key ...string) (s string, err error) {
 	return
 }
 
+// GetBin by path key
 func GetBin(v []byte, key ...string) (r []byte, err error) {
 
 	v, err = byPath(v, key)
@@ -48,6 +50,7 @@ func GetBin(v []byte, key ...string) (r []byte, err error) {
 	return
 }
 
+// GetUnsafeBin by path key
 func GetUnsafeBin(v []byte, key ...string) (r []byte, err error) {
 
 	v, err = byPath(v, key)
@@ -60,7 +63,7 @@ func GetUnsafeBin(v []byte, key ...string) (r []byte, err error) {
 	return
 }
 
-func getBin(v []byte) (r []byte, end int64, t Type, err error) {
+func getBin(v []byte) (r []byte, end int, t Type, err error) {
 
 	f := GetFormat(v[0])
 	t = f.Type()
@@ -72,6 +75,11 @@ func getBin(v []byte) (r []byte, end int64, t Type, err error) {
 	count, metaLen, _ := getCount(f, v)
 
 	end = metaLen + count
+
+	if len(v) < end {
+		err = ErrInvalid
+		return
+	}
 
 	r = v[metaLen:end]
 

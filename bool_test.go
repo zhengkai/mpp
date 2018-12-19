@@ -40,7 +40,7 @@ func TestGetBool(t *testing.T) {
 
 	r, err = mpp.GetBool(b, `not-exists`)
 	if r != false || err != mpp.ErrKeyPathNotFound {
-		t.Error(`get bool fail when wrong path`)
+		t.Error(`get bool fail when wrong path`, err)
 	}
 
 	b, _ = msgpack.Marshal(123)

@@ -2,7 +2,7 @@ package mpp
 
 func ArrayEach(
 	b []byte,
-	cb func(i int64, v []byte, t Type) (isContinue bool),
+	cb func(i int, v []byte, t Type) (isContinue bool),
 	key ...string,
 ) (err error) {
 
@@ -19,9 +19,14 @@ func ArrayEach(
 		return ErrNotArray
 	}
 
+	if len(b) < metaLen+1 {
+		err = ErrInvalid
+		return
+	}
+
 	b = b[metaLen:]
 
-	var i int64
+	var i int
 
 	for {
 
@@ -35,7 +40,13 @@ func ArrayEach(
 			break
 		}
 
-		b = b[GetByteLen(b):]
+		l := GetByteLen(b)
+		if len(b) < l+1 {
+			err = ErrInvalid
+			return
+		}
+
+		b = b[l:]
 	}
 
 	return

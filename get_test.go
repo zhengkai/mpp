@@ -60,6 +60,38 @@ func TestGet(t *testing.T) {
 	}
 }
 
+func TestGetEmtpyMap(t *testing.T) {
+
+	demo := make(map[string]int)
+
+	b, _ := msgpack.Marshal(demo)
+
+	_, _, err := mpp.Get(b, `nothing`)
+	if err != mpp.ErrKeyPathNotFound {
+		t.Error(`should be fail but not`)
+	}
+
+	for i := range b {
+		broken := b[:i:i]
+		mpp.Get(broken, `nothing`)
+	}
+
+	demo[`one`] = 1
+	demo[`two`] = 2
+
+	b, _ = msgpack.Marshal(demo)
+
+	_, _, err = mpp.Get(b, `nothing`)
+	if err != mpp.ErrKeyPathNotFound {
+		t.Error(`should be fail but not`)
+	}
+
+	for i := range b {
+		broken := b[:i:i]
+		mpp.Get(broken, `two`)
+	}
+}
+
 func TestGetFail(t *testing.T) {
 
 	b, _ := msgpack.Marshal(demoV)
@@ -76,10 +108,30 @@ func TestGetFail(t *testing.T) {
 
 	for _, row := range path {
 		_, _, err := mpp.Get(b, row...)
-		if err != mpp.ErrKeyPathNotFound {
+		if err != mpp.ErrKeyPathNotFound && err != mpp.ErrInvalid {
 			t.Error(`get by error path, but not fail, path = `)
 			t.Error(row)
 			t.Error(err)
 		}
+	}
+}
+
+func TestGetMap(test *testing.T) {
+
+	b, _ := msgpack.Marshal(demoV)
+
+	v, t, err := mpp.Get(b, `int`)
+	if t != mpp.Int || err != nil {
+		test.Error(`fail when get from map`)
+	}
+
+	i, err := mpp.GetInt(v)
+	if i != demoV.Int || err != nil {
+		test.Error(`fail when get int from map`)
+	}
+
+	l := len(b)
+	for i := 1; i < l; i++ {
+		mpp.Get(b[:i], `int`)
 	}
 }

@@ -3,7 +3,6 @@ package mpp
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 )
 
 func ToJson(v []byte) *bytes.Buffer {
@@ -22,11 +21,11 @@ func ToJson(v []byte) *bytes.Buffer {
 
 	case Array:
 
-		toJsonArray(v, buf)
+		toJSONArray(v, buf)
 
 	case Map:
 
-		toJsonMap(v, buf)
+		toJSONMap(v, buf)
 
 	case Str:
 
@@ -64,7 +63,7 @@ func ToJson(v []byte) *bytes.Buffer {
 	return buf
 }
 
-func toJsonStr(v []byte, buf *bytes.Buffer, t Type) {
+func toJSONStr(v []byte, buf *bytes.Buffer, t Type) {
 
 	switch t {
 
@@ -91,11 +90,11 @@ func toJsonStr(v []byte, buf *bytes.Buffer, t Type) {
 	}
 }
 
-func toJsonArray(v []byte, buf *bytes.Buffer) {
+func toJSONArray(v []byte, buf *bytes.Buffer) {
 
 	buf.WriteByte('[')
 
-	err := ArrayEach(v, func(i int64, v []byte, t Type) bool {
+	err := ArrayEach(v, func(i int, v []byte, t Type) bool {
 
 		if i > 0 {
 			buf.WriteByte(',')
@@ -107,16 +106,16 @@ func toJsonArray(v []byte, buf *bytes.Buffer) {
 	})
 
 	if err != nil {
-		fmt.Println(`json array error`, err)
+		// fmt.Println(`json array error`, err)
 	}
 
 	buf.WriteByte(']')
 }
 
-func toJsonMap(v []byte, buf *bytes.Buffer) {
+func toJSONMap(v []byte, buf *bytes.Buffer) {
 
 	buf.WriteByte('{')
-	MapEach(v, func(i int64, k []byte, kt Type, v []byte, t Type) bool {
+	MapEach(v, func(i int, k []byte, kt Type, v []byte, t Type) bool {
 
 		if i > 0 {
 			buf.WriteByte(',')
@@ -124,7 +123,7 @@ func toJsonMap(v []byte, buf *bytes.Buffer) {
 
 		// ToJson(k).WriteTo(buf)
 
-		toJsonStr(k, buf, kt)
+		toJSONStr(k, buf, kt)
 		buf.WriteByte(':')
 		ToJson(v).WriteTo(buf)
 

@@ -33,6 +33,14 @@ func TestGetFloat(t *testing.T) {
 		if tf != f {
 			t.Errorf(`test float64 %v fail`, f)
 		}
+
+		// bound check
+		for i := 0; i < 9; i++ {
+			_, err := mpp.GetFloat(b[:i])
+			if err == nil {
+				t.Errorf(`no error when data invalid`)
+			}
+		}
 	}
 
 	// float32
@@ -57,6 +65,14 @@ func TestGetFloat(t *testing.T) {
 
 		if tf != f {
 			t.Errorf(`test float32 %v fail`, f)
+		}
+
+		// bound check
+		for i := 0; i < 5; i++ {
+			_, err := mpp.GetFloat(b[:i])
+			if err == nil {
+				t.Errorf(`no error when data invalid`)
+			}
 		}
 	}
 

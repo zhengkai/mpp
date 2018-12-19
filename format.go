@@ -202,6 +202,7 @@ func (f Format) Type() (t Type) {
 	return
 }
 
+// GetFormat .
 func GetFormat(v byte) Format {
 
 	switch {
@@ -225,7 +226,7 @@ func GetFormat(v byte) Format {
 	return Format(v)
 }
 
-func (f Format) metaLen() (len int64) {
+func (f Format) metaLen() (len int) {
 
 	switch f {
 
@@ -286,11 +287,6 @@ func (f Format) metaLen() (len int64) {
 		FormatInt64:
 
 		len = 9
-
-	default:
-
-		len = 0
-		// panic(`incomplete type ` + f.String())
 	}
 
 	return

@@ -9,16 +9,34 @@ import (
 )
 
 var (
-	jsonId = [...]int{
+	jsonID = [...]int{
 		2,
 		5,
 		8,
 	}
 )
 
+func TestInvalidData(t *testing.T) {
+	mpp.ToJson(nil)
+
+	b := make([]byte, 256)
+	for i := 0; i < 256; i++ {
+		b[i] = byte(i)
+	}
+
+	// try all 3 bit array, make sure no panic
+	for _, x := range b {
+		for _, y := range b {
+			for _, z := range b {
+				_ = mpp.ToJson([]byte{x, y, z})
+			}
+		}
+	}
+}
+
 func TestToJson(t *testing.T) {
 
-	for _, i := range jsonId {
+	for _, i := range jsonID {
 
 		fileJson := fmt.Sprintf(`testdata/toJson/%d.json`, i)
 		fileMsgp := fmt.Sprintf(`testdata/toJson/%d.bin`, i)

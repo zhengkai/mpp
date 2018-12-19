@@ -192,5 +192,14 @@ func TestStr(t *testing.T) {
 		if r != s || err != nil {
 			t.Errorf(`str fail when len = %d`, len(s))
 		}
+
+		// bound check
+		k := 20
+		if i < k {
+			k = i
+		}
+		for j := 0; j < k; j++ {
+			mpp.GetStr(b[:j])
+		}
 	}
 }

@@ -17,11 +17,11 @@ func TestArrayEach(t *testing.T) {
 
 	b, _ := msgpack.Marshal(list)
 
-	var counter int64
+	var counter int
 
 	err := mpp.ArrayEach(
 		b,
-		func(i int64, v []byte, t mpp.Type) bool {
+		func(i int, v []byte, t mpp.Type) bool {
 
 			if i > 100 {
 				return false
@@ -42,11 +42,11 @@ func TestArrayEachFail(t *testing.T) {
 
 	b, _ := msgpack.Marshal(true)
 
-	var counter int64
+	var counter int
 
 	err := mpp.ArrayEach(
 		b,
-		func(i int64, v []byte, t mpp.Type) bool {
+		func(i int, v []byte, t mpp.Type) bool {
 
 			if i > 100 {
 				return false
@@ -73,11 +73,11 @@ func TestArrayEachFailWithPath(t *testing.T) {
 
 	b, _ := msgpack.Marshal(true)
 
-	var counter int64
+	var counter int
 
 	err := mpp.ArrayEach(
 		b,
-		func(i int64, v []byte, t mpp.Type) bool {
+		func(i int, v []byte, t mpp.Type) bool {
 
 			if i > 100 {
 				return false

@@ -5,6 +5,7 @@ import (
 	"encoding/binary"
 )
 
+// GetInt by path key
 func GetInt(v []byte, key ...string) (i int64, err error) {
 
 	v, err = byPath(v, key)
@@ -13,6 +14,10 @@ func GetInt(v []byte, key ...string) (i int64, err error) {
 	}
 
 	f := GetFormat(v[0])
+	if len(v) < f.metaLen() {
+		err = ErrInvalid
+		return
+	}
 
 	switch f {
 

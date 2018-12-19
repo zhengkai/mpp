@@ -2,7 +2,7 @@ package mpp
 
 func MapEach(
 	b []byte,
-	cb func(i int64, k []byte, kt Type, v []byte, vt Type) (isContinue bool),
+	cb func(i int, k []byte, kt Type, v []byte, vt Type) (isContinue bool),
 	key ...string,
 ) (err error) {
 
@@ -21,15 +21,25 @@ func MapEach(
 
 	b = b[metaLen:]
 
-	var i int64
+	var i int
 
 	for {
 
 		k := b
 
+		if len(k) == 0 {
+			err = ErrInvalid
+			return
+		}
+
 		kt := GetFormat(k[0]).Type()
 
-		b = b[GetByteLen(b):]
+		trim := GetByteLen(b)
+		if len(b) < trim+1 {
+			err = ErrInvalid
+			return
+		}
+		b = b[trim:]
 
 		vt := GetFormat(b[0]).Type()
 
@@ -43,7 +53,12 @@ func MapEach(
 			break
 		}
 
-		b = b[GetByteLen(b):]
+		trim = GetByteLen(b)
+		if len(b) < trim+1 {
+			err = ErrInvalid
+			return
+		}
+		b = b[trim:]
 	}
 
 	return
