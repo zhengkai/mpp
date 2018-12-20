@@ -13,9 +13,9 @@ func ArrayEach(
 
 	f := GetFormat(b[0])
 
-	count, metaLen, pErr := getCount(f, b)
+	count, metaLen, err := getCount(f, b)
 
-	if pErr != nil || f.Type() != Array {
+	if err != nil || f.Type() != Array {
 		return ErrNotArray
 	}
 

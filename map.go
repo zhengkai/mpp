@@ -13,9 +13,9 @@ func MapEach(
 
 	f := GetFormat(b[0])
 
-	count, metaLen, pErr := getCount(f, b)
+	count, metaLen, err := getCount(f, b)
 
-	if pErr != nil || f.Type() != Map {
+	if err != nil || f.Type() != Map {
 		return ErrNotMap
 	}
 

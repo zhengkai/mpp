@@ -17,7 +17,7 @@ var (
 )
 
 func TestInvalidData(t *testing.T) {
-	mpp.ToJson(nil)
+	mpp.ToJSON(nil)
 
 	b := make([]byte, 256)
 	for i := 0; i < 256; i++ {
@@ -28,22 +28,22 @@ func TestInvalidData(t *testing.T) {
 	for _, x := range b {
 		for _, y := range b {
 			for _, z := range b {
-				_ = mpp.ToJson([]byte{x, y, z})
+				_ = mpp.ToJSON([]byte{x, y, z})
 			}
 		}
 	}
 }
 
-func TestToJson(t *testing.T) {
+func TestToJSON(t *testing.T) {
 
 	for _, i := range jsonID {
 
-		fileJson := fmt.Sprintf(`testdata/toJson/%d.json`, i)
-		fileMsgp := fmt.Sprintf(`testdata/toJson/%d.bin`, i)
+		fileJSON := fmt.Sprintf(`testdata/toJSON/%d.json`, i)
+		fileMsgp := fmt.Sprintf(`testdata/toJSON/%d.bin`, i)
 
-		json, err := ioutil.ReadFile(fileJson)
+		json, err := ioutil.ReadFile(fileJSON)
 		if err != nil || len(json) < 100 {
-			t.Errorf(`read test data fail, file = %s`, fileJson)
+			t.Errorf(`read test data fail, file = %s`, fileJSON)
 		}
 
 		msgp, err := ioutil.ReadFile(fileMsgp)
@@ -51,32 +51,32 @@ func TestToJson(t *testing.T) {
 			t.Errorf(`read test data fail, file = %s`, fileMsgp)
 		}
 
-		test := mpp.ToJson(msgp).Bytes()
+		test := mpp.ToJSON(msgp).Bytes()
 
 		if string(test) != string(json) {
-			t.Errorf(`ToJson fail, sample %d`, i)
+			t.Errorf(`ToJSON fail, sample %d`, i)
 		}
 	}
 }
 
-func Benchmark_ToJson(b *testing.B) {
+func Benchmark_ToJSON(b *testing.B) {
 
 	b.StopTimer()
 
-	fileJson := fmt.Sprintf(`testdata/toJson/%d.json`, 8)
-	json, _ := ioutil.ReadFile(fileJson)
+	fileJSON := fmt.Sprintf(`testdata/toJSON/%d.json`, 8)
+	json, _ := ioutil.ReadFile(fileJSON)
 	jsonStr := string(json)
 
-	fileMsgp := fmt.Sprintf(`testdata/toJson/%d.bin`, 8)
+	fileMsgp := fmt.Sprintf(`testdata/toJSON/%d.bin`, 8)
 	v, _ := ioutil.ReadFile(fileMsgp)
 
 	b.StartTimer()
 
 	if len(v) < 1 {
-		b.Errorf(`ToJson output empty`)
+		b.Errorf(`ToJSON output empty`)
 	}
 
-	if mpp.ToJson(v).String() != jsonStr {
-		b.Errorf(`ToJson fail when benchmark`)
+	if mpp.ToJSON(v).String() != jsonStr {
+		b.Errorf(`ToJSON fail when benchmark`)
 	}
 }

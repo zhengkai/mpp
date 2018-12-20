@@ -5,7 +5,8 @@ import (
 	"encoding/json"
 )
 
-func ToJson(v []byte) *bytes.Buffer {
+// ToJSON convert msgpack to json buffer
+func ToJSON(v []byte) *bytes.Buffer {
 
 	buf := bytes.NewBuffer([]byte{})
 
@@ -72,7 +73,7 @@ func toJSONStr(v []byte, buf *bytes.Buffer, t Type) {
 		Bool,
 		Nil:
 
-		nb := ToJson(v)
+		nb := ToJSON(v)
 
 		if t == Str {
 
@@ -100,7 +101,7 @@ func toJSONArray(v []byte, buf *bytes.Buffer) {
 			buf.WriteByte(',')
 		}
 
-		ToJson(v).WriteTo(buf)
+		ToJSON(v).WriteTo(buf)
 
 		return true
 	})
@@ -121,11 +122,9 @@ func toJSONMap(v []byte, buf *bytes.Buffer) {
 			buf.WriteByte(',')
 		}
 
-		// ToJson(k).WriteTo(buf)
-
 		toJSONStr(k, buf, kt)
 		buf.WriteByte(':')
-		ToJson(v).WriteTo(buf)
+		ToJSON(v).WriteTo(buf)
 
 		return true
 	})
