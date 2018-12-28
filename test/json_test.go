@@ -38,8 +38,8 @@ func TestToJSON(t *testing.T) {
 
 	for _, i := range jsonID {
 
-		fileJSON := fmt.Sprintf(`testdata/toJSON/%d.json`, i)
-		fileMsgp := fmt.Sprintf(`testdata/toJSON/%d.bin`, i)
+		fileJSON := fmt.Sprintf(`data/toJSON/%d.json`, i)
+		fileMsgp := fmt.Sprintf(`data/toJSON/%d.bin`, i)
 
 		json, err := ioutil.ReadFile(fileJSON)
 		if err != nil || len(json) < 100 {
@@ -63,11 +63,11 @@ func Benchmark_ToJSON(b *testing.B) {
 
 	b.StopTimer()
 
-	fileJSON := fmt.Sprintf(`testdata/toJSON/%d.json`, 8)
+	fileJSON := fmt.Sprintf(`data/toJSON/%d.json`, 8)
 	json, _ := ioutil.ReadFile(fileJSON)
 	jsonStr := string(json)
 
-	fileMsgp := fmt.Sprintf(`testdata/toJSON/%d.bin`, 8)
+	fileMsgp := fmt.Sprintf(`data/toJSON/%d.bin`, 8)
 	v, _ := ioutil.ReadFile(fileMsgp)
 
 	b.StartTimer()
