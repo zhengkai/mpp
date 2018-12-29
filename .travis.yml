@@ -7,7 +7,7 @@ install:
 - go get github.com/mattn/goveralls
 - go get github.com/vmihailenco/msgpack
 script:
-- cd test && go test -v -test.bench=".*" -test.benchmem -covermode=count -coverprofile=coverage.out
+- cd test && go test -v -test.bench=".*" -test.benchmem -coverpkg github.com/zhengkai/mpp -covermode=count -coverprofile=coverage.out
   .
 - "$HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken
   $COVERALLS_TOKEN"
